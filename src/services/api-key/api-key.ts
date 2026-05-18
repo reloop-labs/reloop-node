@@ -1,29 +1,36 @@
 import type { ReloopClient } from "@/client";
-import type { PaginatedResponse } from "@/core/types";
-import type { ApiKey, ApiKeyWithKey } from "@/services/api-key/types";
+import type {
+	ApiKey,
+	ApiKeyListParams,
+	ApiKeyListResponse,
+	ApiKeyWithKey,
+	CreateApiKeyParams,
+	DeleteApiKeyResponse,
+	UpdateApiKeyParams,
+} from "@/services/api-key/types";
 
 export class ApiKeyService {
 	constructor(private readonly client: ReloopClient) {}
 
-	async create(params: { name: string }): Promise<ApiKeyWithKey> {
+	async create(params: CreateApiKeyParams): Promise<ApiKeyWithKey> {
 		return this.client.fetch<ApiKeyWithKey>("/api-key/v1/", {
 			method: "POST",
 			body: JSON.stringify(params),
 		});
 	}
 
-	async list(params?: {
-		page?: number;
-		limit?: number;
-	}): Promise<PaginatedResponse<ApiKey>> {
+	async list(params?: ApiKeyListParams): Promise<ApiKeyListResponse> {
 		const searchParams = new URLSearchParams();
-		if (params?.page) searchParams.set("page", params.page.toString());
-		if (params?.limit) searchParams.set("limit", params.limit.toString());
+		if (params?.page !== undefined) searchParams.set("page", params.page.toString());
+		if (params?.limit !== undefined) searchParams.set("limit", params.limit.toString());
+		if (params?.enabled !== undefined) searchParams.set("enabled", params.enabled.toString());
+		if (params?.userId) searchParams.set("userId", params.userId);
+		if (params?.q) searchParams.set("q", params.q);
 
 		const queryString = searchParams.toString();
 		const path = `/api-key/v1/${queryString ? `?${queryString}` : ""}`;
 
-		return this.client.fetch<PaginatedResponse<ApiKey>>(path, {
+		return this.client.fetch<ApiKeyListResponse>(path, {
 			method: "GET",
 		});
 	}
@@ -34,15 +41,15 @@ export class ApiKeyService {
 		});
 	}
 
-	async update(id: string, params: { name: string }): Promise<ApiKey> {
+	async update(id: string, params: UpdateApiKeyParams): Promise<ApiKey> {
 		return this.client.fetch<ApiKey>(`/api-key/v1/${id}`, {
 			method: "PATCH",
 			body: JSON.stringify(params),
 		});
 	}
 
-	async delete(id: string): Promise<void> {
-		return this.client.fetch<void>(`/api-key/v1/${id}`, {
+	async delete(id: string): Promise<DeleteApiKeyResponse> {
+		return this.client.fetch<DeleteApiKeyResponse>(`/api-key/v1/${id}`, {
 			method: "DELETE",
 		});
 	}
