@@ -13,7 +13,7 @@ export class ApiKeyService {
 	constructor(private readonly client: ReloopClient) {}
 
 	async create(params: CreateApiKeyParams): Promise<ApiKeyWithKey> {
-		return this.client.fetch<ApiKeyWithKey>("/api-key/v1/", {
+		return this.client.fetch<ApiKeyWithKey>("/api/api-key/v1/", {
 			method: "POST",
 			body: JSON.stringify(params),
 		});
@@ -28,7 +28,7 @@ export class ApiKeyService {
 		if (params?.q) searchParams.set("q", params.q);
 
 		const queryString = searchParams.toString();
-		const path = `/api-key/v1/${queryString ? `?${queryString}` : ""}`;
+		const path = `/api/api-key/v1/${queryString ? `?${queryString}` : ""}`;
 
 		return this.client.fetch<ApiKeyListResponse>(path, {
 			method: "GET",
@@ -36,38 +36,38 @@ export class ApiKeyService {
 	}
 
 	async get(id: string): Promise<ApiKey> {
-		return this.client.fetch<ApiKey>(`/api-key/v1/${id}`, {
+		return this.client.fetch<ApiKey>(`/api/api-key/v1/${id}`, {
 			method: "GET",
 		});
 	}
 
 	async update(id: string, params: UpdateApiKeyParams): Promise<ApiKey> {
-		return this.client.fetch<ApiKey>(`/api-key/v1/${id}`, {
+		return this.client.fetch<ApiKey>(`/api/api-key/v1/${id}`, {
 			method: "PATCH",
 			body: JSON.stringify(params),
 		});
 	}
 
 	async delete(id: string): Promise<DeleteApiKeyResponse> {
-		return this.client.fetch<DeleteApiKeyResponse>(`/api-key/v1/${id}`, {
+		return this.client.fetch<DeleteApiKeyResponse>(`/api/api-key/v1/${id}`, {
 			method: "DELETE",
 		});
 	}
 
 	async rotate(id: string): Promise<ApiKeyWithKey> {
-		return this.client.fetch<ApiKeyWithKey>(`/api-key/v1/rotate/${id}`, {
+		return this.client.fetch<ApiKeyWithKey>(`/api/api-key/v1/rotate/${id}`, {
 			method: "POST",
 		});
 	}
 
 	async enable(id: string): Promise<ApiKey> {
-		return this.client.fetch<ApiKey>(`/api-key/v1/enable/${id}`, {
+		return this.client.fetch<ApiKey>(`/api/api-key/v1/enable/${id}`, {
 			method: "POST",
 		});
 	}
 
 	async disable(id: string): Promise<ApiKey> {
-		return this.client.fetch<ApiKey>(`/api-key/v1/disable/${id}`, {
+		return this.client.fetch<ApiKey>(`/api/api-key/v1/disable/${id}`, {
 			method: "POST",
 		});
 	}
