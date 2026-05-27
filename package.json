@@ -18,6 +18,10 @@
 	],
 	"author": "",
 	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/reloop-labs/reloop-node.git"
+	},
 	"devDependencies": {
 		"@types/node": "^20.0.0",
 		"tsup": "^8.0.0",
