@@ -5,11 +5,12 @@ export class ReloopClient {
 	public readonly baseUrl: string;
 
 	constructor(options: ReloopClientOptions) {
-		if (!options.apiKey) {
+		const apiKey = options.apiKey || options.key;
+		if (!apiKey) {
 			throw new Error("Reloop SDK requires an apiKey.");
 		}
-		this.apiKey = options.apiKey;
-		this.baseUrl = options.baseUrl || "https://reloop.sh";
+		this.apiKey = apiKey;
+		this.baseUrl = options.baseUrl || options.url || "https://reloop.sh";
 	}
 
 	async fetch<T>(path: string, options: RequestInit = {}): Promise<T> {

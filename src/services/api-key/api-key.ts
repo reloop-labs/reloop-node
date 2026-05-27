@@ -1,4 +1,4 @@
-import type { ReloopClient } from "@/client";
+import type { ReloopClient } from "../../client";
 import type {
 	ApiKey,
 	ApiKeyListParams,
@@ -7,7 +7,7 @@ import type {
 	CreateApiKeyParams,
 	DeleteApiKeyResponse,
 	UpdateApiKeyParams,
-} from "@/services/api-key/types";
+} from "./types";
 
 export class ApiKeyService {
 	constructor(private readonly client: ReloopClient) {}
