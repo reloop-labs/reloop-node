@@ -3,8 +3,6 @@ export interface ApiKey {
 	name: string | null;
 	start: string | null;
 	prefix: string | null;
-	organizationId: string;
-	userId: string;
 	refillInterval: number | null;
 	refillAmount: number | null;
 	lastRefillAt: string | null;

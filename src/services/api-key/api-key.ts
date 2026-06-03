@@ -71,4 +71,9 @@ export class ApiKeyService {
 			method: "POST",
 		});
 	}
+
+	/** Pauses an API key (alias for {@link disable}). */
+	async pause(id: string): Promise<ApiKey> {
+		return this.disable(id);
+	}
 }

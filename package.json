@@ -1,6 +1,6 @@
 {
 	"name": "reloop-email",
-	"version": "1.0.6",
+	"version": "1.3.0",
 	"description": "Reloop Node.js SDK",
 	"type": "module",
 	"main": "dist/index.js",
