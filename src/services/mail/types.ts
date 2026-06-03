@@ -25,6 +25,7 @@ export interface SendMailParams {
 		id: string;
 		variables?: Record<string, string | number>;
 	};
+	thread_id?: string;
 }
 
 export interface SendMailResponse {
