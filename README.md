@@ -125,12 +125,124 @@ await reloop.domain.forwardDns("domain_id_here", {
 });
 ```
 
+## Webhooks
+
+Create endpoints, manage status, inspect deliveries, and retry failed attempts.
+
+### Create a webhook
+
+```typescript
+const webhook = await reloop.webhook.create({
+  description: "Production notifications",
+  url: "https://example.com/webhooks/reloop",
+  events: ["domain.create", "email.sent"],
+});
+console.log(webhook.secret); // Full secret returned on create only
+```
+
+### List, get, update, and delete
+
+```typescript
+const { webhooks } = await reloop.webhook.list({ page: 1, limit: 10 });
+
+const one = await reloop.webhook.get("wh_id_here");
+
+await reloop.webhook.update("wh_id_here", { maxRetries: 5 });
+
+await reloop.webhook.delete("wh_id_here");
+```
+
+### Status (pause / enable / disable)
+
+```typescript
+await reloop.webhook.pause("wh_id_here");
+await reloop.webhook.enable("wh_id_here");
+await reloop.webhook.disable("wh_id_here");
+```
+
+### Trigger, deliveries, and retry
+
+```typescript
+await reloop.webhook.trigger({
+  event: "domain.create",
+  payload: { id: "dom_123", domain: "send.example.com" },
+});
+
+const { deliveries } = await reloop.webhook.listDeliveries("wh_id_here", {
+  status: "failed",
+});
+
+await reloop.webhook.retryDelivery("delivery_id_here");
+```
+
+### Receiving webhooks (verify signatures)
+
+Reloop signs each delivery with HMAC-SHA256 (`X-Webhook-Signature: t=<unix>,v1=<hex>`). Store the signing secret from `create()` in env — it is **not** your Reloop API key.
+
+Use the **raw request body** (`request.text()` in Next.js). Do not call `request.json()` before verifying.
+
+```typescript
+// src/app/api/webhook/route.ts
+import { NextResponse } from "next/server";
+import { WebhookService, WebhookSignatureVerificationError } from "reloop-email";
+
+export async function POST(request: Request) {
+  try {
+    const payload = await request.text();
+
+    const event = WebhookService.verify({
+      payload,
+      headers: {
+        "x-webhook-signature": request.headers.get("x-webhook-signature"),
+        "x-webhook-timestamp": request.headers.get("x-webhook-timestamp"),
+      },
+      secret: process.env.RELOOP_WEBHOOK_SECRET!,
+    });
+
+    if (event.event === "domain.create") {
+      console.log("Domain created:", event.payload);
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (err) {
+    if (err instanceof WebhookSignatureVerificationError) {
+      return new NextResponse(err.message, { status: 400 });
+    }
+    throw err;
+  }
+}
+```
+
+Or with a client instance:
+
+```typescript
+const event = reloop.webhook.verify({ payload, headers, secret });
+```
+
+Stripe-style alias:
+
+```typescript
+const event = WebhookService.constructEvent(
+  payload,
+  request.headers.get("x-webhook-signature"),
+  process.env.RELOOP_WEBHOOK_SECRET!,
+);
+```
+
+Verified event fields: `event.id`, `event.event` (type), `event.payload`, `event.timestamp`.
+
 ## TypeScript Support
 
 The SDK is written in TypeScript and ships type definitions. Import types such as `ApiKey`, `Domain`, and `ApiKeyListResponse` from the package.
 
 ```typescript
-import type { ApiKey, Domain, ApiKeyListResponse } from "reloop-email";
+import type {
+  ApiKey,
+  Domain,
+  Webhook,
+  WebhookEvent,
+  ApiKeyListResponse,
+} from "reloop-email";
 ```
 
 ## License

@@ -4,11 +4,13 @@ import { ApiKeyService } from "./services/api-key/api-key";
 import { AudienceService } from "./services/audience/audience";
 import { DomainService } from "./services/domain/domain";
 import { MailService } from "./services/mail/mail";
+import { WebhookService } from "./services/webhook/webhook";
 
 export class Reloop {
 	public apiKey: ApiKeyService;
 	public audience: AudienceService;
 	public domain: DomainService;
+	public webhook: WebhookService;
 	public mail: MailService;
 	private client: ReloopClient;
 
@@ -17,6 +19,7 @@ export class Reloop {
 		this.apiKey = new ApiKeyService(this.client);
 		this.audience = new AudienceService(this.client);
 		this.domain = new DomainService(this.client);
+		this.webhook = new WebhookService(this.client);
 		this.mail = new MailService(this.client);
 	}
 }
@@ -32,3 +35,6 @@ export * from "./services/audience/groups";
 export * from "./services/audience/types";
 export * from "./services/domain/domain";
 export * from "./services/domain/types";
+export * from "./services/webhook/webhook";
+export * from "./services/webhook/types";
+export * from "./services/webhook/verify";
