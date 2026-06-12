@@ -1,4 +1,5 @@
 import type { ReloopClient } from "../../client";
+import type { ReloopResult } from "../../core/result";
 import type {
 	CreateWebhookParams,
 	DeleteWebhookResponse,
@@ -44,14 +45,14 @@ export class WebhookService {
 		return WebhookService.verify(params);
 	}
 
-	async create(params: CreateWebhookParams): Promise<Webhook> {
+	async create(params: CreateWebhookParams): Promise<ReloopResult<Webhook>> {
 		return this.client.fetch<Webhook>("/api/webhook/v1/", {
 			method: "POST",
 			body: JSON.stringify(params),
 		});
 	}
 
-	async list(params?: ListWebhooksParams): Promise<WebhookListResponse> {
+	async list(params?: ListWebhooksParams): Promise<ReloopResult<WebhookListResponse>> {
 		const searchParams = new URLSearchParams();
 		if (params?.page !== undefined) searchParams.set("page", params.page.toString());
 		if (params?.limit !== undefined) searchParams.set("limit", params.limit.toString());
@@ -65,39 +66,39 @@ export class WebhookService {
 		return this.client.fetch<WebhookListResponse>(path, { method: "GET" });
 	}
 
-	async get(webhookId: string): Promise<Webhook> {
+	async get(webhookId: string): Promise<ReloopResult<Webhook>> {
 		return this.client.fetch<Webhook>(`/api/webhook/v1/${webhookId}`, {
 			method: "GET",
 		});
 	}
 
-	async update(webhookId: string, params: UpdateWebhookParams): Promise<Webhook> {
+	async update(webhookId: string, params: UpdateWebhookParams): Promise<ReloopResult<Webhook>> {
 		return this.client.fetch<Webhook>(`/api/webhook/v1/${webhookId}`, {
 			method: "PATCH",
 			body: JSON.stringify(params),
 		});
 	}
 
-	async delete(webhookId: string): Promise<DeleteWebhookResponse> {
+	async delete(webhookId: string): Promise<ReloopResult<DeleteWebhookResponse>> {
 		return this.client.fetch<DeleteWebhookResponse>(
 			`/api/webhook/v1/${webhookId}`,
 			{ method: "DELETE" },
 		);
 	}
 
-	async pause(webhookId: string): Promise<Webhook> {
+	async pause(webhookId: string): Promise<ReloopResult<Webhook>> {
 		return this.update(webhookId, { status: "paused" });
 	}
 
-	async enable(webhookId: string): Promise<Webhook> {
+	async enable(webhookId: string): Promise<ReloopResult<Webhook>> {
 		return this.update(webhookId, { status: "active" });
 	}
 
-	async disable(webhookId: string): Promise<Webhook> {
+	async disable(webhookId: string): Promise<ReloopResult<Webhook>> {
 		return this.update(webhookId, { status: "disabled" });
 	}
 
-	async trigger(params: TriggerWebhookParams): Promise<TriggerWebhookResponse> {
+	async trigger(params: TriggerWebhookParams): Promise<ReloopResult<TriggerWebhookResponse>> {
 		return this.client.fetch<TriggerWebhookResponse>("/api/webhook/v1/trigger", {
 			method: "POST",
 			body: JSON.stringify(params),
@@ -107,7 +108,7 @@ export class WebhookService {
 	async listDeliveries(
 		webhookId: string,
 		params?: ListWebhookDeliveriesParams,
-	): Promise<WebhookDeliveryListResponse> {
+	): Promise<ReloopResult<WebhookDeliveryListResponse>> {
 		const searchParams = new URLSearchParams();
 		if (params?.page !== undefined) searchParams.set("page", params.page.toString());
 		if (params?.limit !== undefined) searchParams.set("limit", params.limit.toString());
@@ -123,7 +124,7 @@ export class WebhookService {
 		});
 	}
 
-	async retryDelivery(deliveryId: string): Promise<RetryWebhookDeliveryResponse> {
+	async retryDelivery(deliveryId: string): Promise<ReloopResult<RetryWebhookDeliveryResponse>> {
 		return this.client.fetch<RetryWebhookDeliveryResponse>(
 			`/api/webhook/deliveries/${deliveryId}/retry`,
 			{ method: "POST" },

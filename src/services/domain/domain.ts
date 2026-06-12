@@ -1,4 +1,5 @@
 import type { ReloopClient } from "../../client";
+import type { ReloopResult } from "../../core/result";
 import type {
 	CreateDomainParams,
 	Domain,
@@ -13,14 +14,14 @@ import type {
 export class DomainService {
 	constructor(private readonly client: ReloopClient) {}
 
-	async create(params: CreateDomainParams): Promise<Domain> {
+	async create(params: CreateDomainParams): Promise<ReloopResult<Domain>> {
 		return this.client.fetch<Domain>("/api/domain/v1/create", {
 			method: "POST",
 			body: JSON.stringify(params),
 		});
 	}
 
-	async list(params?: ListDomainsParams): Promise<DomainListResponse> {
+	async list(params?: ListDomainsParams): Promise<ReloopResult<DomainListResponse>> {
 		const searchParams = new URLSearchParams();
 		if (params?.page !== undefined) searchParams.set("page", params.page.toString());
 		if (params?.limit !== undefined) searchParams.set("limit", params.limit.toString());
@@ -33,26 +34,26 @@ export class DomainService {
 		return this.client.fetch<DomainListResponse>(path, { method: "GET" });
 	}
 
-	async get(domainId: string): Promise<Domain> {
+	async get(domainId: string): Promise<ReloopResult<Domain>> {
 		return this.client.fetch<Domain>(`/api/domain/v1/${domainId}`, {
 			method: "GET",
 		});
 	}
 
-	async update(domainId: string, params: UpdateDomainParams): Promise<Domain> {
+	async update(domainId: string, params: UpdateDomainParams): Promise<ReloopResult<Domain>> {
 		return this.client.fetch<Domain>(`/api/domain/v1/${domainId}`, {
 			method: "PATCH",
 			body: JSON.stringify(params),
 		});
 	}
 
-	async delete(domainId: string): Promise<Domain> {
+	async delete(domainId: string): Promise<ReloopResult<Domain>> {
 		return this.client.fetch<Domain>(`/api/domain/v1/${domainId}`, {
 			method: "DELETE",
 		});
 	}
 
-	async verify(domainId: string): Promise<DomainStatusResponse> {
+	async verify(domainId: string): Promise<ReloopResult<DomainStatusResponse>> {
 		return this.client.fetch<DomainStatusResponse>(
 			`/api/domain/v1/verify/${domainId}`,
 			{ method: "POST" },
@@ -62,7 +63,7 @@ export class DomainService {
 	async forwardDns(
 		domainId: string,
 		params: ForwardDnsParams,
-	): Promise<ForwardDnsResponse> {
+	): Promise<ReloopResult<ForwardDnsResponse>> {
 		return this.client.fetch<ForwardDnsResponse>(
 			`/api/domain/v1/verify/${domainId}/forward-dns`,
 			{

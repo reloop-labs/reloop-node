@@ -1,5 +1,6 @@
 import type { ReloopClient } from "../../client";
-import { AudienceGroupsService } from "./groups";
+import type { ReloopResult } from "../../core/result";
+import { ContactGroupsService } from "./groups";
 import type {
 	Contact,
 	ContactGroup,
@@ -34,21 +35,21 @@ function appendContactQuery(
 	if (params?.status) searchParams.set("status", params.status);
 }
 
-export class AudienceService {
-	public readonly groups: AudienceGroupsService;
+export class ContactsService {
+	public readonly groups: ContactGroupsService;
 
 	constructor(private readonly client: ReloopClient) {
-		this.groups = new AudienceGroupsService(client);
+		this.groups = new ContactGroupsService(client);
 	}
 
-	async create(params: CreateContactParams): Promise<ContactResponse> {
+	async create(params: CreateContactParams): Promise<ReloopResult<ContactResponse>> {
 		return this.client.fetch<ContactResponse>("/api/contacts/create", {
 			method: "POST",
 			body: JSON.stringify(params),
 		});
 	}
 
-	async get(contactId: string): Promise<Contact> {
+	async get(contactId: string): Promise<ReloopResult<Contact>> {
 		return this.client.fetch<Contact>(
 			`/api/contacts/retrieve/${contactId}`,
 			{ method: "GET" },
@@ -57,7 +58,7 @@ export class AudienceService {
 
 	async list(
 		params?: ListContactsParams,
-	): Promise<ContactListResponse | GroupContactListResponse> {
+	): Promise<ReloopResult<ContactListResponse | GroupContactListResponse>> {
 		if (params?.groupId) {
 			const { groupId, ...query } = params;
 			return this.groups.listContacts(groupId, query);
@@ -74,14 +75,14 @@ export class AudienceService {
 	async update(
 		contactId: string,
 		params: UpdateContactParams,
-	): Promise<ContactResponse> {
+	): Promise<ReloopResult<ContactResponse>> {
 		return this.client.fetch<ContactResponse>(`/api/contacts/${contactId}`, {
 			method: "PATCH",
 			body: JSON.stringify(params),
 		});
 	}
 
-	async delete(contactId: string): Promise<DeleteContactResponse> {
+	async delete(contactId: string): Promise<ReloopResult<DeleteContactResponse>> {
 		return this.client.fetch<DeleteContactResponse>(
 			`/api/contacts/${contactId}`,
 			{ method: "DELETE" },
@@ -90,7 +91,7 @@ export class AudienceService {
 
 	async createProperty(
 		params: CreatePropertyParams,
-	): Promise<ContactPropertyResponse> {
+	): Promise<ReloopResult<ContactPropertyResponse>> {
 		return this.client.fetch<ContactPropertyResponse>(
 			"/api/contacts/v1/properties/create",
 			{
@@ -102,7 +103,7 @@ export class AudienceService {
 
 	async listProperties(
 		params?: ListPropertiesParams,
-	): Promise<PropertyListResponse> {
+	): Promise<ReloopResult<PropertyListResponse>> {
 		const searchParams = new URLSearchParams();
 		if (params?.page !== undefined) searchParams.set("page", params.page.toString());
 		if (params?.limit !== undefined) searchParams.set("limit", params.limit.toString());
@@ -120,7 +121,7 @@ export class AudienceService {
 	async updateProperty(
 		propertyId: string,
 		params: UpdatePropertyParams,
-	): Promise<ContactPropertyResponse> {
+	): Promise<ReloopResult<ContactPropertyResponse>> {
 		return this.client.fetch<ContactPropertyResponse>(
 			`/api/contacts/v1/properties/${propertyId}`,
 			{
@@ -130,14 +131,14 @@ export class AudienceService {
 		);
 	}
 
-	async deleteProperty(propertyId: string): Promise<DeletePropertyResponse> {
+	async deleteProperty(propertyId: string): Promise<ReloopResult<DeletePropertyResponse>> {
 		return this.client.fetch<DeletePropertyResponse>(
 			`/api/contacts/v1/properties/${propertyId}`,
 			{ method: "DELETE" },
 		);
 	}
 
-	async createGroup(params: CreateGroupParams): Promise<ContactGroupResponse> {
+	async createGroup(params: CreateGroupParams): Promise<ReloopResult<ContactGroupResponse>> {
 		return this.client.fetch<ContactGroupResponse>(
 			"/api/contacts/v1/groups/create",
 			{
@@ -147,7 +148,7 @@ export class AudienceService {
 		);
 	}
 
-	async listGroups(params?: ListGroupsParams): Promise<GroupListResponse> {
+	async listGroups(params?: ListGroupsParams): Promise<ReloopResult<GroupListResponse>> {
 		const searchParams = new URLSearchParams();
 		if (params?.page !== undefined) searchParams.set("page", params.page.toString());
 		if (params?.limit !== undefined) searchParams.set("limit", params.limit.toString());
@@ -161,7 +162,7 @@ export class AudienceService {
 		return this.client.fetch<GroupListResponse>(path, { method: "GET" });
 	}
 
-	async getGroup(groupId: string): Promise<ContactGroup> {
+	async getGroup(groupId: string): Promise<ReloopResult<ContactGroup>> {
 		return this.client.fetch<ContactGroup>(
 			`/api/contacts/v1/groups/${groupId}`,
 			{ method: "GET" },
@@ -171,7 +172,7 @@ export class AudienceService {
 	async updateGroup(
 		groupId: string,
 		params: UpdateGroupParams,
-	): Promise<ContactGroupResponse> {
+	): Promise<ReloopResult<ContactGroupResponse>> {
 		return this.client.fetch<ContactGroupResponse>(
 			`/api/contacts/v1/groups/${groupId}`,
 			{
@@ -181,7 +182,7 @@ export class AudienceService {
 		);
 	}
 
-	async deleteGroup(groupId: string): Promise<DeleteGroupResponse> {
+	async deleteGroup(groupId: string): Promise<ReloopResult<DeleteGroupResponse>> {
 		return this.client.fetch<DeleteGroupResponse>(
 			`/api/contacts/v1/groups/${groupId}`,
 			{ method: "DELETE" },

@@ -1,4 +1,5 @@
 import type { ReloopClient } from "../../client";
+import type { ReloopResult } from "../../core/result";
 import type {
 	AddContactToGroupParams,
 	AddContactToGroupResponse,
@@ -18,13 +19,13 @@ function appendContactQuery(
 	if (params?.status) searchParams.set("status", params.status);
 }
 
-export class AudienceGroupsService {
+export class ContactGroupsService {
 	constructor(private readonly client: ReloopClient) {}
 
 	async addContact(
 		groupId: string,
 		params: AddContactToGroupParams,
-	): Promise<AddContactToGroupResponse> {
+	): Promise<ReloopResult<AddContactToGroupResponse>> {
 		return this.client.fetch<AddContactToGroupResponse>(
 			`/api/contacts/group/${groupId}`,
 			{
@@ -37,7 +38,7 @@ export class AudienceGroupsService {
 	async removeContact(
 		groupId: string,
 		params: RemoveContactFromGroupParams,
-	): Promise<RemoveContactFromGroupResponse> {
+	): Promise<ReloopResult<RemoveContactFromGroupResponse>> {
 		return this.client.fetch<RemoveContactFromGroupResponse>(
 			`/api/contacts/group/${groupId}`,
 			{
@@ -50,7 +51,7 @@ export class AudienceGroupsService {
 	async listContacts(
 		groupId: string,
 		params?: ListContactsParams,
-	): Promise<GroupContactListResponse> {
+	): Promise<ReloopResult<GroupContactListResponse>> {
 		const searchParams = new URLSearchParams();
 		appendContactQuery(searchParams, params);
 		const queryString = searchParams.toString();
