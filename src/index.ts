@@ -34,6 +34,7 @@ export * from "./services/api-key/types";
 export * from "./services/mail/mail";
 export * from "./services/mail/types";
 export * from "./services/contacts/contacts";
+export * from "./services/contacts/channels";
 export * from "./services/contacts/groups";
 export * from "./services/contacts/types";
 export * from "./services/domain/domain";

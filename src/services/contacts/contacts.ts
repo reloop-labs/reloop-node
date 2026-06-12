@@ -1,5 +1,6 @@
 import type { ReloopClient } from "../../client";
 import type { ReloopResult } from "../../core/result";
+import { ContactChannelsService } from "./channels";
 import { ContactGroupsService } from "./groups";
 import type {
 	Contact,
@@ -37,9 +38,11 @@ function appendContactQuery(
 
 export class ContactsService {
 	public readonly groups: ContactGroupsService;
+	public readonly channels: ContactChannelsService;
 
 	constructor(private readonly client: ReloopClient) {
 		this.groups = new ContactGroupsService(client);
+		this.channels = new ContactChannelsService(client);
 	}
 
 	async create(params: CreateContactParams): Promise<ReloopResult<ContactResponse>> {
