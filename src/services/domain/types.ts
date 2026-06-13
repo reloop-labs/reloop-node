@@ -108,3 +108,12 @@ export interface ForwardDnsParams {
 export interface ForwardDnsResponse {
 	success: boolean;
 }
+
+export interface DomainNameserversResponse {
+	object: "domain_nameservers";
+	domainId: string;
+	domain: string;
+	nameservers: string[] | null;
+	dnsProvider: string | null;
+	event: string;
+}

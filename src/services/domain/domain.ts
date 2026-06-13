@@ -4,6 +4,7 @@ import type {
 	CreateDomainParams,
 	Domain,
 	DomainListResponse,
+	DomainNameserversResponse,
 	DomainStatusResponse,
 	ForwardDnsParams,
 	ForwardDnsResponse,
@@ -38,6 +39,15 @@ export class DomainService {
 		return this.client.fetch<Domain>(`/api/domain/v1/${domainId}`, {
 			method: "GET",
 		});
+	}
+
+	async getNameservers(
+		domainId: string,
+	): Promise<ReloopResult<DomainNameserversResponse>> {
+		return this.client.fetch<DomainNameserversResponse>(
+			`/api/domain/v1/nameservers/${domainId}`,
+			{ method: "GET" },
+		);
 	}
 
 	async update(domainId: string, params: UpdateDomainParams): Promise<ReloopResult<Domain>> {

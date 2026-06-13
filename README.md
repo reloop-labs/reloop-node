@@ -193,6 +193,18 @@ const { error: forwardError } = await reloop.domain.forwardDns("domain_id_here",
 if (forwardError) throw forwardError;
 ```
 
+### Get nameservers
+
+Use this to detect the DNS provider and nameservers for auto-connect flows:
+
+```typescript
+const { response: nameservers, error } =
+  await reloop.domain.getNameservers("domain_id_here");
+if (error) throw error;
+
+console.log(nameservers.dnsProvider, nameservers.nameservers);
+```
+
 ## Webhooks
 
 Create endpoints, manage status, inspect deliveries, and retry failed attempts.
