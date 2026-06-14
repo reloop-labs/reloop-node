@@ -33,4 +33,5 @@ export interface SendMailResponse {
 	messageId: string;
 	status: string;
 	timestamp: string;
+	id: string;
 }
