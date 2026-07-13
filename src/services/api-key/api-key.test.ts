@@ -27,9 +27,11 @@ test("apiKey module exposes exactly the eight backend wire methods", () => {
 
 	const ownMethods = Object.getOwnPropertyNames(
 		Object.getPrototypeOf(apiKey),
-	).filter(
-		(name) => name !== "constructor" && typeof (apiKey as Record<string, unknown>)[name] === "function",
-	);
+	).filter((name) => {
+		if (name === "constructor") return false;
+		const value = (apiKey as unknown as Record<string, unknown>)[name];
+		return typeof value === "function";
+	});
 
 	assert.deepEqual(
 		[...ownMethods].sort(),
