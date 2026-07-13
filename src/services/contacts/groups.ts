@@ -1,5 +1,5 @@
-import type { ReloopClient } from "../../client";
-import type { ReloopResult } from "../../core/result";
+import type { ReloopClient } from "#src/client";
+import type { ReloopResult } from "#src/core/result";
 import type {
 	AddContactToGroupParams,
 	AddContactToGroupResponse,
@@ -7,7 +7,7 @@ import type {
 	ListContactsParams,
 	RemoveContactFromGroupParams,
 	RemoveContactFromGroupResponse,
-} from "./types";
+} from "#src/services/contacts/types";
 
 function appendContactQuery(
 	searchParams: URLSearchParams,

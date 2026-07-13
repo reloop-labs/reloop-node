@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
-import { ReloopValidationError } from "../../../../dist/index.js";
+import { ReloopValidationError } from "reloop-email";
 import {
 	apiKeyWithKeyFixture,
 	assertAuthAndJson,
@@ -11,7 +11,7 @@ import {
 	jsonResponse,
 	mockFetch,
 	parseBody,
-} from "../test-helpers.ts";
+} from "#src/services/api-key/test-helpers";
 
 afterEach(() => {
 	mock.restoreAll();

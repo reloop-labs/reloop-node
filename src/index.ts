@@ -1,10 +1,10 @@
-import { ReloopClient } from "./client";
-import type { ReloopClientOptions } from "./core/types";
-import { ApiKeyService } from "./services/api-key/api-key";
-import { ContactsService } from "./services/contacts/contacts";
-import { DomainService } from "./services/domain/domain";
-import { MailService } from "./services/mail/mail";
-import { WebhookService } from "./services/webhook/webhook";
+import { ReloopClient } from "#src/client";
+import type { ReloopClientOptions } from "#src/core/types";
+import { ApiKeyService } from "#src/services/api-key/api-key";
+import { ContactsService } from "#src/services/contacts/contacts";
+import { DomainService } from "#src/services/domain/domain";
+import { MailService } from "#src/services/mail/mail";
+import { WebhookService } from "#src/services/webhook/webhook";
 
 /**
  * Reloop Node SDK entry. Construct with a required `apiKey` and optional `baseUrl`.
@@ -35,14 +35,14 @@ export class Reloop {
 export default Reloop;
 
 // Options + Result (public)
-export type { ReloopClientOptions } from "./core/types";
+export type { ReloopClientOptions } from "#src/core/types";
 export {
 	ReloopApiError,
 	type ReloopApiErrorBody,
 	type ReloopResult,
 	ok,
 	err,
-} from "./core/result";
+} from "#src/core/result";
 
 // Api-key request/response types only (not ApiKeyService)
 export type {
@@ -54,18 +54,18 @@ export type {
 	CreateApiKeyParams,
 	DeleteApiKeyResponse,
 	UpdateApiKeyParams,
-} from "./services/api-key/types";
-export { ReloopValidationError } from "./services/api-key/errors";
+} from "#src/services/api-key/types";
+export { ReloopValidationError } from "#src/services/api-key/errors";
 
 // Other resources keep current export style for this release
-export * from "./services/mail/mail";
-export * from "./services/mail/types";
-export * from "./services/contacts/contacts";
-export * from "./services/contacts/channels";
-export * from "./services/contacts/groups";
-export * from "./services/contacts/types";
-export * from "./services/domain/domain";
-export * from "./services/domain/types";
-export * from "./services/webhook/webhook";
-export * from "./services/webhook/types";
-export * from "./services/webhook/verify";
+export * from "#src/services/mail/mail";
+export * from "#src/services/mail/types";
+export * from "#src/services/contacts/contacts";
+export * from "#src/services/contacts/channels";
+export * from "#src/services/contacts/groups";
+export * from "#src/services/contacts/types";
+export * from "#src/services/domain/domain";
+export * from "#src/services/domain/types";
+export * from "#src/services/webhook/webhook";
+export * from "#src/services/webhook/types";
+export * from "#src/services/webhook/verify";

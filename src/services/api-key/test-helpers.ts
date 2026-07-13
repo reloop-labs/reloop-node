@@ -3,8 +3,8 @@
  */
 import assert from "node:assert/strict";
 import { mock } from "node:test";
-import { Reloop } from "../../../dist/index.js";
-import type { ReloopClientOptions } from "../../core/types";
+import { Reloop } from "reloop-email";
+import type { ReloopClientOptions } from "#src/core/types";
 
 export const BASE_URL = "https://reloop.sh";
 export const TEST_API_KEY = "rl_test";

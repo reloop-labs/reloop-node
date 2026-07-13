@@ -1,7 +1,7 @@
-import type { ReloopClient } from "../../client";
-import type { ReloopResult } from "../../core/result";
-import { ContactChannelsService } from "./channels";
-import { ContactGroupsService } from "./groups";
+import type { ReloopClient } from "#src/client";
+import type { ReloopResult } from "#src/core/result";
+import { ContactChannelsService } from "#src/services/contacts/channels";
+import { ContactGroupsService } from "#src/services/contacts/groups";
 import type {
 	Contact,
 	ContactGroup,
@@ -24,7 +24,7 @@ import type {
 	UpdateContactParams,
 	UpdateGroupParams,
 	UpdatePropertyParams,
-} from "./types";
+} from "#src/services/contacts/types";
 
 function appendContactQuery(
 	searchParams: URLSearchParams,

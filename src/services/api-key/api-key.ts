@@ -1,12 +1,12 @@
-import type { ReloopClient } from "../../client";
-import type { ReloopResult } from "../../core/result";
-import { createApiKey } from "./create/create";
-import { deleteApiKey } from "./delete/delete";
-import { disableApiKey } from "./disable/disable";
-import { enableApiKey } from "./enable/enable";
-import { getApiKey } from "./get/get";
-import { listApiKeys } from "./list/list";
-import { rotateApiKey } from "./rotate/rotate";
+import type { ReloopClient } from "#src/client";
+import type { ReloopResult } from "#src/core/result";
+import { createApiKey } from "#src/services/api-key/create/create";
+import { deleteApiKey } from "#src/services/api-key/delete/delete";
+import { disableApiKey } from "#src/services/api-key/disable/disable";
+import { enableApiKey } from "#src/services/api-key/enable/enable";
+import { getApiKey } from "#src/services/api-key/get/get";
+import { listApiKeys } from "#src/services/api-key/list/list";
+import { rotateApiKey } from "#src/services/api-key/rotate/rotate";
 import type {
 	ApiKey,
 	ApiKeyListParams,
@@ -15,8 +15,8 @@ import type {
 	CreateApiKeyParams,
 	DeleteApiKeyResponse,
 	UpdateApiKeyParams,
-} from "./types";
-import { updateApiKey } from "./update/update";
+} from "#src/services/api-key/types";
+import { updateApiKey } from "#src/services/api-key/update/update";
 
 /**
  * API key resource module — one method per backend route under `/api/api-key/v1`.

@@ -1,5 +1,5 @@
-import type { ReloopClient } from "../../client";
-import type { ReloopResult } from "../../core/result";
+import type { ReloopClient } from "#src/client";
+import type { ReloopResult } from "#src/core/result";
 import type {
 	CreateWebhookParams,
 	DeleteWebhookResponse,
@@ -14,11 +14,11 @@ import type {
 	WebhookDeliveryListResponse,
 	WebhookEvent,
 	WebhookListResponse,
-} from "./types";
+} from "#src/services/webhook/types";
 import {
 	verifyWebhook,
 	WEBHOOK_SIGNATURE_HEADER,
-} from "./verify";
+} from "#src/services/webhook/verify";
 
 export class WebhookService {
 	constructor(private readonly client: ReloopClient) {}

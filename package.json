@@ -6,9 +6,20 @@
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
 	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"imports": {
+		"#src/*": "./src/*.ts"
+	},
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
+		"typecheck": "tsc --noEmit",
 		"test": "npm run build && node --test --experimental-strip-types $(find src tests \\( -name '*.test.ts' -o -name '*.test.mjs' \\) | sort)"
 	},
 	"keywords": [

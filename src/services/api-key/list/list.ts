@@ -1,8 +1,8 @@
-import type { ReloopClient } from "../../../client";
-import type { ReloopResult } from "../../../core/result";
-import { ReloopValidationError } from "../errors";
-import { apiKeyListPath } from "../paths";
-import type { ApiKeyListParams, ApiKeyListResponse } from "../types";
+import type { ReloopClient } from "#src/client";
+import type { ReloopResult } from "#src/core/result";
+import { ReloopValidationError } from "#src/services/api-key/errors";
+import { apiKeyListPath } from "#src/services/api-key/paths";
+import type { ApiKeyListParams, ApiKeyListResponse } from "#src/services/api-key/types";
 
 const PAGE_MIN = 1;
 const LIMIT_MIN = 1;

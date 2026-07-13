@@ -1,4 +1,4 @@
-import { ReloopValidationError } from "./errors";
+import { ReloopValidationError } from "#src/services/api-key/errors";
 
 /** Matches backend create/update body constraints. */
 const NAME_MIN = 1;

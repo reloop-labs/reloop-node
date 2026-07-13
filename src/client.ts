@@ -1,11 +1,11 @@
-import type { ReloopClientOptions } from "./core/types";
+import type { ReloopClientOptions } from "#src/core/types";
 import {
 	err,
 	ok,
 	ReloopApiError,
 	type ReloopApiErrorBody,
 	type ReloopResult,
-} from "./core/result";
+} from "#src/core/result";
 
 const DEFAULT_BASE_URL = "https://reloop.sh";
 
