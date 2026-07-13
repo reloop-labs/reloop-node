@@ -26,23 +26,23 @@ Requires **Node.js 20+** (CI uses Node 22).
 
 ```
 src/
-  client.ts              # HTTP client
-  core/                  # Result types, shared types
+  index.ts               # Public entry: Reloop + selected types
+  client.ts              # HTTP transport (internal)
+  core/                  # Result types, client options
   services/
-    mail/                # POST /api/mail/v1/send
-    domain/              # Domain routes (snake_case bodies)
-    api-key/
+    mail/
+    domain/
+    api-key/             # Wire ops: create,list,get,update,delete,rotate,enable,disable
     contacts/
     webhook/
 tests/
-  init.test.mjs          # client construction
+  init.test.mjs          # strict construction
+  exports.test.mjs       # public package surface
   mail.test.mjs
   domain.test.mjs
   api-key/               # one file per endpoint
     _helpers.mjs
     create.test.mjs
-    list.test.mjs
-    get.test.mjs
     ...
 dist/                    # Build output (tsup)
 ```
@@ -53,14 +53,16 @@ dist/                    # Build output (tsup)
 
 | Topic | Rule |
 |-------|------|
+| Init | `new Reloop({ apiKey, baseUrl? })` — `apiKey` required; no `key` / `url` aliases |
 | HTTP errors | Return `{ response, error }` — do **not** throw for API/network failures |
 | Mail & domain requests | **snake_case** JSON (`reply_to`, `click_tracking`) |
-| Contacts & API keys | camelCase in JSON (handled by the client layer) |
-| Types | Add request/response interfaces in each service’s `types.ts` |
-| Exports | Export services and types from `src/index.ts` |
+| Contacts & API keys | camelCase in JSON bodies as the API expects |
+| API key methods | 1:1 with backend: create, list, get, update, delete, rotate, enable, disable (no `pause`) |
+| Types | Request/response interfaces in each service’s `types.ts` |
+| Public exports | `Reloop` (+ default), options, Result/error types, api-key **types**, other resource modules as today. Do **not** export constructable `ReloopClient` or `ApiKeyService` |
 | Tests | Mock `fetch`; assert path, method, headers, body, success + error Result |
 | API key tests | One `tests/api-key/<endpoint>.test.mjs` per route; share fixtures in `_helpers.mjs` |
-| README | Keep minimal: prerequisites (API key + verified domain), send example, link to docs |
+| README | Prerequisites, strict init, send example, api-key table, link to docs |
 
 ### Example: adding an API key endpoint test
 
@@ -107,21 +109,22 @@ Run tests: `npm test`
 - [ ] New routes have tests under `tests/`
 - [ ] Types match the OpenAPI spec at [reloop.sh/docs](https://reloop.sh/docs)
 - [ ] No API keys or secrets committed
+- [ ] Public export surface unchanged unless intentional (see Conventions)
 - [ ] Bump `package.json` version **only** when cutting a release (maintainers)
 
 ---
 
 ## Releasing
 
-Version lives in **`package.json`** and **`package-lock.json`** (currently aligned with other Reloop SDKs).
+Version lives in **`package.json`** and **`package-lock.json`**.
 
 ### 1. Bump version (SemVer)
 
 ```bash
-# Edit package.json → "version": "1.9.0"
+# Edit package.json → "version": "2.0.1"
 npm install   # refreshes package-lock.json
 git add package.json package-lock.json
-git commit -m "chore: release v1.9.0"
+git commit -m "chore: release v2.0.1"
 git push origin main
 ```
 
@@ -130,8 +133,8 @@ git push origin main
 Tag must match the manifest: `v` + version.
 
 ```bash
-git tag v1.9.0
-git push origin v1.9.0
+git tag v2.0.1
+git push origin v2.0.1
 ```
 
 ### 3. GitHub Release (automatic)
@@ -165,4 +168,4 @@ Requires `NPM_TOKEN` (or OIDC) in repository secrets.
 |-------|-----|
 | Tag ≠ `package.json` version | Align both, then recreate the tag |
 | `npm ci` fails in CI | Commit an updated `package-lock.json` |
-| Release already exists | Bump patch version (e.g. `1.8.1`) and tag again |
+| Release already exists | Bump patch version (e.g. `2.0.1`) and tag again |

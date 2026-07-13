@@ -142,17 +142,7 @@ test("credential is not a public field on Reloop or apiKey module", () => {
 	assert.equal(typeof reloop.apiKey.create, "function");
 });
 
-test("ReloopClient does not expose apiKey as a public field", async () => {
-	const secret = "rl_secret_value";
+test("ReloopClient is not constructable from the public package surface", async () => {
 	const mod = await import("../dist/index.js");
-	if (typeof mod.ReloopClient !== "function") {
-		// Export removal is a later ticket; skip if already hidden
-		return;
-	}
-	const client = new mod.ReloopClient({ apiKey: secret });
-	assert.equal("apiKey" in client, false);
-	assert.equal(client.apiKey, undefined);
-	for (const name of Object.getOwnPropertyNames(client)) {
-		assert.notEqual(client[name], secret);
-	}
+	assert.equal(mod.ReloopClient, undefined);
 });
