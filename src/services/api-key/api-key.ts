@@ -1,12 +1,12 @@
 import type { ReloopClient } from "../../client";
 import type { ReloopResult } from "../../core/result";
-import { createApiKey } from "./create";
-import { deleteApiKey } from "./delete";
-import { disableApiKey } from "./disable";
-import { enableApiKey } from "./enable";
-import { getApiKey } from "./get";
-import { listApiKeys } from "./list";
-import { rotateApiKey } from "./rotate";
+import { createApiKey } from "./create/create";
+import { deleteApiKey } from "./delete/delete";
+import { disableApiKey } from "./disable/disable";
+import { enableApiKey } from "./enable/enable";
+import { getApiKey } from "./get/get";
+import { listApiKeys } from "./list/list";
+import { rotateApiKey } from "./rotate/rotate";
 import type {
 	ApiKey,
 	ApiKeyListParams,
@@ -16,7 +16,7 @@ import type {
 	DeleteApiKeyResponse,
 	UpdateApiKeyParams,
 } from "./types";
-import { updateApiKey } from "./update";
+import { updateApiKey } from "./update/update";
 
 /**
  * API key resource module — one method per backend route under `/api/api-key/v1`.

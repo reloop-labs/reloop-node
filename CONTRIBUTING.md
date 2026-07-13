@@ -31,12 +31,16 @@ src/
   core/                  # Result types, client options
   services/
     api-key/
-      create.ts          # validate + HTTP
-      create.test.ts     # wire + validation (paired)
-      list.ts + list.test.ts
+      create/
+        create.ts        # validate + HTTP
+        create.test.ts   # wire + validation
+      list/
+        list.ts
+        list.test.ts
       ...
-      api-key.ts + api-key.test.ts
-      test-helpers.ts    # fixtures (tests only)
+      api-key.ts         # thin facade
+      api-key.test.ts
+      test-helpers.ts
     mail/
     domain/
     contacts/
@@ -58,7 +62,7 @@ dist/
 | Init | `new Reloop({ apiKey, baseUrl? })` — `apiKey` required; no `key` / `url` aliases |
 | HTTP errors | Return `{ response, error }` — do **not** throw for API/network failures |
 | Input validation | Throw `ReloopValidationError` before fetch (no network). Rules match backend (name 1–255, page ≥ 1, limit 1–100, non-empty ids) |
-| Api-key layout | **Colocate** `create.ts` + `create.test.ts`. Validation lives in the op file; tests cover wire + validation. Shared field helpers in `fields.ts`; thin `api-key.ts` facade |
+| Api-key layout | One folder per op: `create/create.ts` + `create/create.test.ts`. Validation in the op file; tests cover wire + validation. Shared `fields.ts` / `paths.ts`; thin `api-key.ts` facade |
 | Mail & domain requests | **snake_case** JSON (`reply_to`, `click_tracking`) |
 | Contacts & API keys | camelCase in JSON bodies as the API expects |
 | API key methods | 1:1 with backend: create, list, get, update, delete, rotate, enable, disable (no `pause`) |
@@ -70,7 +74,7 @@ dist/
 ### Example: paired create test
 
 ```typescript
-// src/services/api-key/create.test.ts  (next to create.ts)
+// src/services/api-key/create/create.test.ts  (next to create.ts)
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
 import {
@@ -81,7 +85,7 @@ import {
   jsonResponse,
   mockFetch,
   parseBody,
-} from "./test-helpers.ts";
+} from "../test-helpers.ts";
 
 afterEach(() => mock.restoreAll());
 

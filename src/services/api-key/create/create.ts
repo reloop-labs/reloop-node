@@ -1,9 +1,9 @@
-import type { ReloopClient } from "../../client";
-import type { ReloopResult } from "../../core/result";
-import { ReloopValidationError } from "./errors";
-import { requireApiKeyName } from "./fields";
-import { API_KEY_V1 } from "./paths";
-import type { ApiKeyWithKey, CreateApiKeyParams } from "./types";
+import type { ReloopClient } from "../../../client";
+import type { ReloopResult } from "../../../core/result";
+import { ReloopValidationError } from "../errors";
+import { requireApiKeyName } from "../fields";
+import { API_KEY_V1 } from "../paths";
+import type { ApiKeyWithKey, CreateApiKeyParams } from "../types";
 
 function validateCreateParams(
 	params: CreateApiKeyParams | null | undefined,

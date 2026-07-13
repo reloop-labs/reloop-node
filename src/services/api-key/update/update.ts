@@ -1,9 +1,9 @@
-import type { ReloopClient } from "../../client";
-import type { ReloopResult } from "../../core/result";
-import { ReloopValidationError } from "./errors";
-import { requireApiKeyId, requireApiKeyName } from "./fields";
-import { apiKeyById } from "./paths";
-import type { ApiKey, UpdateApiKeyParams } from "./types";
+import type { ReloopClient } from "../../../client";
+import type { ReloopResult } from "../../../core/result";
+import { ReloopValidationError } from "../errors";
+import { requireApiKeyId, requireApiKeyName } from "../fields";
+import { apiKeyById } from "../paths";
+import type { ApiKey, UpdateApiKeyParams } from "../types";
 
 function validateUpdateParams(
 	params: UpdateApiKeyParams | null | undefined,
