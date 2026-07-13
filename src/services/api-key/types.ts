@@ -1,7 +1,7 @@
 /**
  * Types mirror the backend api-key service OpenAPI models (`ApiKeyModel`).
  * Field names and nullability match the wire JSON 1:1.
- * Runtime input checks live in `validate.ts` (throw before any HTTP call).
+ * Runtime input checks live next to each op (throw before any HTTP call).
  */
 
 /** Creator summary optionally embedded on get/list detail responses. */

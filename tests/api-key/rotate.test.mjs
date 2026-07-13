@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
+import { ReloopValidationError } from "../../dist/index.js";
 import {
 	apiKeyWithKeyFixture,
 	assertAuthAndJson,
+	assertNoFetch,
 	createClient,
 	errorJsonResponse,
 	getCall,
@@ -14,6 +16,8 @@ import {
 afterEach(() => {
 	mock.restoreAll();
 });
+
+// --- wire ---
 
 test("rotate: POST /api/api-key/v1/rotate/:id and returns new secret", async () => {
 	const payload = apiKeyWithKeyFixture({
@@ -45,4 +49,15 @@ test("rotate: returns error on non-OK", async () => {
 	assert.equal(response, null);
 	assert.equal(error?.status, 500);
 	assert.equal(error?.message, "Failed to rotate API key");
+});
+
+// --- validation (no fetch) ---
+
+test("rotate: empty id throws before fetch", async () => {
+	const fetchMock = mockFetch(new Response("{}"));
+	await assert.rejects(
+		() => createClient().apiKey.rotate(""),
+		ReloopValidationError,
+	);
+	assertNoFetch(fetchMock);
 });

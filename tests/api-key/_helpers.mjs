@@ -137,3 +137,8 @@ export function parseBody(body) {
 	assert.equal(typeof body, "string");
 	return JSON.parse(body);
 }
+
+/** Assert validation rejected before any HTTP call. */
+export function assertNoFetch(fetchMock) {
+	assert.equal(fetchMock.mock.calls.length, 0, "expected no HTTP call");
+}

@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
+import { ReloopValidationError } from "../../dist/index.js";
 import {
 	apiKeyFixture,
 	assertAuthAndJson,
+	assertNoFetch,
 	createClient,
 	errorJsonResponse,
 	getCall,
@@ -14,6 +16,8 @@ import {
 afterEach(() => {
 	mock.restoreAll();
 });
+
+// --- wire ---
 
 test("get: GET /api/api-key/v1/:id", async () => {
 	const payload = apiKeyFixture({
@@ -57,4 +61,24 @@ test("get: returns error on 404", async () => {
 	assert.equal(response, null);
 	assert.equal(error?.status, 404);
 	assert.equal(error?.message, "API key not found");
+});
+
+// --- validation (no fetch) ---
+
+test("get: empty id throws before fetch", async () => {
+	const fetchMock = mockFetch(new Response("{}"));
+	await assert.rejects(
+		() => createClient().apiKey.get(""),
+		ReloopValidationError,
+	);
+	assertNoFetch(fetchMock);
+});
+
+test("get: non-string id throws before fetch", async () => {
+	const fetchMock = mockFetch(new Response("{}"));
+	await assert.rejects(
+		() => createClient().apiKey.get(null),
+		ReloopValidationError,
+	);
+	assertNoFetch(fetchMock);
 });

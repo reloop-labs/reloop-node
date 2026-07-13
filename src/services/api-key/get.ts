@@ -1,8 +1,8 @@
 import type { ReloopClient } from "../../client";
 import type { ReloopResult } from "../../core/result";
+import { requireApiKeyId } from "./fields";
 import { apiKeyById } from "./paths";
 import type { ApiKey } from "./types";
-import { requireApiKeyId } from "./validate";
 
 /** GET `/api/api-key/v1/:id` */
 export async function getApiKey(

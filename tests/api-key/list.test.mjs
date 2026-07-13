@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
+import { ReloopValidationError } from "../../dist/index.js";
 import {
 	assertAuthAndJson,
+	assertNoFetch,
 	createClient,
 	errorJsonResponse,
 	getCall,
@@ -13,6 +15,8 @@ import {
 afterEach(() => {
 	mock.restoreAll();
 });
+
+// --- wire ---
 
 test("list: GET /api/api-key/v1/ with no query", async () => {
 	const payload = listResponseFixture();
@@ -83,4 +87,50 @@ test("list: returns error on non-OK", async () => {
 	assert.equal(response, null);
 	assert.equal(error?.status, 401);
 	assert.equal(error?.message, "Unauthorized");
+});
+
+// --- validation (no fetch) ---
+
+test("list: page < 1 throws before fetch", async () => {
+	const fetchMock = mockFetch(new Response("{}"));
+	await assert.rejects(
+		() => createClient().apiKey.list({ page: 0 }),
+		(err) => {
+			assert.ok(err instanceof ReloopValidationError);
+			assert.equal(err.field, "page");
+			return true;
+		},
+	);
+	assertNoFetch(fetchMock);
+});
+
+test("list: limit > 100 throws before fetch", async () => {
+	const fetchMock = mockFetch(new Response("{}"));
+	await assert.rejects(
+		() => createClient().apiKey.list({ limit: 101 }),
+		(err) => {
+			assert.ok(err instanceof ReloopValidationError);
+			assert.equal(err.field, "limit");
+			return true;
+		},
+	);
+	assertNoFetch(fetchMock);
+});
+
+test("list: non-boolean enabled throws before fetch", async () => {
+	const fetchMock = mockFetch(new Response("{}"));
+	await assert.rejects(
+		() => createClient().apiKey.list({ enabled: "yes" }),
+		ReloopValidationError,
+	);
+	assertNoFetch(fetchMock);
+});
+
+test("list: empty userId throws before fetch", async () => {
+	const fetchMock = mockFetch(new Response("{}"));
+	await assert.rejects(
+		() => createClient().apiKey.list({ userId: "  " }),
+		ReloopValidationError,
+	);
+	assertNoFetch(fetchMock);
 });

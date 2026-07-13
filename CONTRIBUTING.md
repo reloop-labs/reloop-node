@@ -55,8 +55,8 @@ dist/                    # Build output (tsup)
 |-------|------|
 | Init | `new Reloop({ apiKey, baseUrl? })` — `apiKey` required; no `key` / `url` aliases |
 | HTTP errors | Return `{ response, error }` — do **not** throw for API/network failures |
-| Input validation | Throw `ReloopValidationError` before fetch (no network). Api-key rules match backend (name 1–255, page ≥ 1, limit 1–100, non-empty ids) |
-| Api-key layout | One op file per route (`create.ts`, `list.ts`, …) + `validate.ts` + thin `api-key.ts` facade |
+| Input validation | Throw `ReloopValidationError` before fetch (no network). Rules match backend (name 1–255, page ≥ 1, limit 1–100, non-empty ids) |
+| Api-key layout | Pair each op: `create.ts` ↔ `tests/api-key/create.test.mjs` (wire + validation). Shared field helpers in `fields.ts`; thin `api-key.ts` facade |
 | Mail & domain requests | **snake_case** JSON (`reply_to`, `click_tracking`) |
 | Contacts & API keys | camelCase in JSON bodies as the API expects |
 | API key methods | 1:1 with backend: create, list, get, update, delete, rotate, enable, disable (no `pause`) |

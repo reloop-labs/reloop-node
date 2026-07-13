@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
+import { ReloopValidationError } from "../../dist/index.js";
 import {
 	apiKeyFixture,
 	assertAuthAndJson,
+	assertNoFetch,
 	createClient,
 	errorJsonResponse,
 	getCall,
@@ -14,6 +16,8 @@ import {
 afterEach(() => {
 	mock.restoreAll();
 });
+
+// --- wire ---
 
 test("enable: POST /api/api-key/v1/enable/:id", async () => {
 	const payload = apiKeyFixture({ enabled: true, event: "evt_enable" });
@@ -42,4 +46,15 @@ test("enable: returns error on non-OK", async () => {
 	assert.equal(response, null);
 	assert.equal(error?.status, 500);
 	assert.equal(error?.message, "Failed to enable API key");
+});
+
+// --- validation (no fetch) ---
+
+test("enable: empty id throws before fetch", async () => {
+	const fetchMock = mockFetch(new Response("{}"));
+	await assert.rejects(
+		() => createClient().apiKey.enable(""),
+		ReloopValidationError,
+	);
+	assertNoFetch(fetchMock);
 });

@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
+import { ReloopValidationError } from "../../dist/index.js";
 import {
 	assertAuthAndJson,
+	assertNoFetch,
 	createClient,
 	deleteResponseFixture,
 	errorJsonResponse,
@@ -14,6 +16,8 @@ import {
 afterEach(() => {
 	mock.restoreAll();
 });
+
+// --- wire ---
 
 test("delete: DELETE /api/api-key/v1/:id", async () => {
 	const payload = deleteResponseFixture();
@@ -41,4 +45,15 @@ test("delete: returns error on non-OK", async () => {
 	assert.equal(response, null);
 	assert.equal(error?.status, 404);
 	assert.equal(error?.message, "API key not found");
+});
+
+// --- validation (no fetch) ---
+
+test("delete: empty id throws before fetch", async () => {
+	const fetchMock = mockFetch(new Response("{}"));
+	await assert.rejects(
+		() => createClient().apiKey.delete(""),
+		ReloopValidationError,
+	);
+	assertNoFetch(fetchMock);
 });
