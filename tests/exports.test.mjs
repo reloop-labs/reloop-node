@@ -17,6 +17,7 @@ test("Result helpers and error type are exported", () => {
 	assert.equal(typeof sdk.ok, "function");
 	assert.equal(typeof sdk.err, "function");
 	assert.equal(typeof sdk.ReloopApiError, "function");
+	assert.equal(typeof sdk.ReloopValidationError, "function");
 
 	const okResult = sdk.ok({ id: "1" });
 	assert.equal(okResult.error, null);
@@ -28,6 +29,10 @@ test("Result helpers and error type are exported", () => {
 	const errResult = sdk.err(apiError);
 	assert.equal(errResult.response, null);
 	assert.equal(errResult.error, apiError);
+
+	const validation = new sdk.ReloopValidationError("bad name", "name");
+	assert.equal(validation.name, "ReloopValidationError");
+	assert.equal(validation.field, "name");
 });
 
 test("ReloopClient is not part of the public constructable surface", () => {

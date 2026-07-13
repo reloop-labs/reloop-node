@@ -32,6 +32,8 @@ const reloop = new Reloop({ apiKey: "rl_your_api_key_here" });
 
 HTTP helpers return `{ response, error }` — they do not throw for API or network failures.
 
+Invalid arguments (e.g. empty key id or name) throw `ReloopValidationError` **before** any network request.
+
 ## Send email
 
 ```typescript

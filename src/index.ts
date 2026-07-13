@@ -55,6 +55,7 @@ export type {
 	DeleteApiKeyResponse,
 	UpdateApiKeyParams,
 } from "./services/api-key/types";
+export { ReloopValidationError } from "./services/api-key/errors";
 
 // Other resources keep current export style for this release
 export * from "./services/mail/mail";
