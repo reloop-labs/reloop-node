@@ -1,7 +1,10 @@
 import type { ReloopClient } from "@/client";
-import type { ReloopResult } from "@/core/result";
 import { ReloopValidationError } from "@/services/api-key/errors";
 import { apiKeyListPath } from "@/services/api-key/paths";
+import {
+	toApiKeyListResult,
+	type ApiKeyListResult,
+} from "@/services/api-key/result";
 import type { ApiKeyListParams, ApiKeyListResponse } from "@/services/api-key/types";
 
 const PAGE_MIN = 1;
@@ -88,7 +91,7 @@ function validateListParams(
 export async function listApiKeys(
 	client: ReloopClient,
 	params?: ApiKeyListParams,
-): Promise<ReloopResult<ApiKeyListResponse>> {
+): Promise<ApiKeyListResult> {
 	const valid = validateListParams(params);
 	const searchParams = new URLSearchParams();
 	if (valid?.page !== undefined) searchParams.set("page", valid.page.toString());
@@ -100,5 +103,6 @@ export async function listApiKeys(
 	if (valid?.q) searchParams.set("q", valid.q);
 
 	const path = apiKeyListPath(searchParams.toString());
-	return client.fetch<ApiKeyListResponse>(path, { method: "GET" });
+	const result = await client.fetch<ApiKeyListResponse>(path, { method: "GET" });
+	return toApiKeyListResult(result);
 }

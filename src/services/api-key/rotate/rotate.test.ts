@@ -24,11 +24,11 @@ test("rotate: POST /api/api-key/v1/rotate/:id and returns new secret", async () 
 	});
 	const fetchMock = mockFetch(jsonResponse(payload));
 
-	const { response, error } = await createClient().apiKey.rotate(KEY_ID);
+	const { apiKey, apiKeyError } = await createClient().apiKey.rotate(KEY_ID);
 
-	assert.equal(error, null);
-	assert.deepEqual(response, payload);
-	assert.equal(response?.key, "rl_live_rotated_secret");
+	assert.equal(apiKeyError, null);
+	assert.deepEqual(apiKey, payload);
+	assert.equal(apiKey?.key, "rl_live_rotated_secret");
 
 	const call = getCall(fetchMock);
 	assert.equal(call.url, `https://reloop.sh/api/api-key/v1/rotate/${KEY_ID}`);
@@ -37,16 +37,16 @@ test("rotate: POST /api/api-key/v1/rotate/:id and returns new secret", async () 
 	assert.equal(call.body, undefined);
 });
 
-test("rotate: returns error on non-OK", async () => {
+test("rotate: returns apiKeyError on non-OK", async () => {
 	mockFetch(
 		errorJsonResponse({ message: "Failed to rotate API key" }, 500, "Error"),
 	);
 
-	const { response, error } = await createClient().apiKey.rotate(KEY_ID);
+	const { apiKey, apiKeyError } = await createClient().apiKey.rotate(KEY_ID);
 
-	assert.equal(response, null);
-	assert.equal(error?.status, 500);
-	assert.equal(error?.message, "Failed to rotate API key");
+	assert.equal(apiKey, null);
+	assert.equal(apiKeyError?.status, 500);
+	assert.equal(apiKeyError?.message, "Failed to rotate API key");
 });
 
 test("rotate: empty id throws before fetch", async () => {

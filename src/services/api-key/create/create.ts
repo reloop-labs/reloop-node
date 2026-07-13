@@ -1,8 +1,11 @@
 import type { ReloopClient } from "@/client";
-import type { ReloopResult } from "@/core/result";
 import { ReloopValidationError } from "@/services/api-key/errors";
 import { requireApiKeyName } from "@/services/api-key/fields";
 import { API_KEY_V1 } from "@/services/api-key/paths";
+import {
+	toApiKeyResult,
+	type ApiKeyResult,
+} from "@/services/api-key/result";
 import type { ApiKeyWithKey, CreateApiKeyParams } from "@/services/api-key/types";
 
 function validateCreateParams(
@@ -20,10 +23,11 @@ function validateCreateParams(
 export async function createApiKey(
 	client: ReloopClient,
 	params: CreateApiKeyParams,
-): Promise<ReloopResult<ApiKeyWithKey>> {
+): Promise<ApiKeyResult<ApiKeyWithKey>> {
 	const body = validateCreateParams(params);
-	return client.fetch<ApiKeyWithKey>(`${API_KEY_V1}/`, {
+	const result = await client.fetch<ApiKeyWithKey>(`${API_KEY_V1}/`, {
 		method: "POST",
 		body: JSON.stringify(body),
 	});
+	return toApiKeyResult(result);
 }

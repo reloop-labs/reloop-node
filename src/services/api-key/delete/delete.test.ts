@@ -21,10 +21,10 @@ test("delete: DELETE /api/api-key/v1/:id", async () => {
 	const payload = deleteResponseFixture();
 	const fetchMock = mockFetch(jsonResponse(payload));
 
-	const { response, error } = await createClient().apiKey.delete(KEY_ID);
+	const { apiKey, apiKeyError } = await createClient().apiKey.delete(KEY_ID);
 
-	assert.equal(error, null);
-	assert.deepEqual(response, payload);
+	assert.equal(apiKeyError, null);
+	assert.deepEqual(apiKey, payload);
 
 	const call = getCall(fetchMock);
 	assert.equal(call.url, `https://reloop.sh/api/api-key/v1/${KEY_ID}`);
@@ -33,16 +33,16 @@ test("delete: DELETE /api/api-key/v1/:id", async () => {
 	assert.equal(call.body, undefined);
 });
 
-test("delete: returns error on non-OK", async () => {
+test("delete: returns apiKeyError on non-OK", async () => {
 	mockFetch(
 		errorJsonResponse({ message: "API key not found" }, 404, "Not Found"),
 	);
 
-	const { response, error } = await createClient().apiKey.delete("key_missing");
+	const { apiKey, apiKeyError } = await createClient().apiKey.delete("key_missing");
 
-	assert.equal(response, null);
-	assert.equal(error?.status, 404);
-	assert.equal(error?.message, "API key not found");
+	assert.equal(apiKey, null);
+	assert.equal(apiKeyError?.status, 404);
+	assert.equal(apiKeyError?.message, "API key not found");
 });
 
 test("delete: empty id throws before fetch", async () => {

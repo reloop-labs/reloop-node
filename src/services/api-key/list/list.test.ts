@@ -20,10 +20,10 @@ test("list: GET /api/api-key/v1/ with no query", async () => {
 	const payload = listResponseFixture();
 	const fetchMock = mockFetch(jsonResponse(payload));
 
-	const { response, error } = await createClient().apiKey.list();
+	const { apiKeys, apiKeyError } = await createClient().apiKey.list();
 
-	assert.equal(error, null);
-	assert.deepEqual(response, payload);
+	assert.equal(apiKeyError, null);
+	assert.deepEqual(apiKeys, payload);
 
 	const call = getCall(fetchMock);
 	assert.equal(call.url, "https://reloop.sh/api/api-key/v1/");
@@ -37,7 +37,7 @@ test("list: builds full query string from params", async () => {
 		jsonResponse(listResponseFixture({ page: 2, limit: 5 })),
 	);
 
-	const { error } = await createClient().apiKey.list({
+	const { apiKeyError } = await createClient().apiKey.list({
 		page: 2,
 		limit: 5,
 		enabled: true,
@@ -45,7 +45,7 @@ test("list: builds full query string from params", async () => {
 		q: "prod",
 	});
 
-	assert.equal(error, null);
+	assert.equal(apiKeyError, null);
 	const { url } = getCall(fetchMock);
 	const parsed = new URL(url);
 	assert.equal(
@@ -82,16 +82,16 @@ test("list: omits undefined optional filters", async () => {
 	assert.equal(params.has("q"), false);
 });
 
-test("list: returns error on non-OK", async () => {
+test("list: returns apiKeyError on non-OK", async () => {
 	mockFetch(
 		errorJsonResponse({ message: "Unauthorized" }, 401, "Unauthorized"),
 	);
 
-	const { response, error } = await createClient().apiKey.list({ page: 1 });
+	const { apiKeys, apiKeyError } = await createClient().apiKey.list({ page: 1 });
 
-	assert.equal(response, null);
-	assert.equal(error?.status, 401);
-	assert.equal(error?.message, "Unauthorized");
+	assert.equal(apiKeys, null);
+	assert.equal(apiKeyError?.status, 401);
+	assert.equal(apiKeyError?.message, "Unauthorized");
 });
 
 test("list: page < 1 throws before fetch", async () => {

@@ -21,11 +21,11 @@ test("enable: POST /api/api-key/v1/enable/:id", async () => {
 	const payload = apiKeyFixture({ enabled: true, event: "evt_enable" });
 	const fetchMock = mockFetch(jsonResponse(payload));
 
-	const { response, error } = await createClient().apiKey.enable(KEY_ID);
+	const { apiKey, apiKeyError } = await createClient().apiKey.enable(KEY_ID);
 
-	assert.equal(error, null);
-	assert.deepEqual(response, payload);
-	assert.equal(response?.enabled, true);
+	assert.equal(apiKeyError, null);
+	assert.deepEqual(apiKey, payload);
+	assert.equal(apiKey?.enabled, true);
 
 	const call = getCall(fetchMock);
 	assert.equal(call.url, `https://reloop.sh/api/api-key/v1/enable/${KEY_ID}`);
@@ -34,16 +34,16 @@ test("enable: POST /api/api-key/v1/enable/:id", async () => {
 	assert.equal(call.body, undefined);
 });
 
-test("enable: returns error on non-OK", async () => {
+test("enable: returns apiKeyError on non-OK", async () => {
 	mockFetch(
 		errorJsonResponse({ message: "Failed to enable API key" }, 500, "Error"),
 	);
 
-	const { response, error } = await createClient().apiKey.enable(KEY_ID);
+	const { apiKey, apiKeyError } = await createClient().apiKey.enable(KEY_ID);
 
-	assert.equal(response, null);
-	assert.equal(error?.status, 500);
-	assert.equal(error?.message, "Failed to enable API key");
+	assert.equal(apiKey, null);
+	assert.equal(apiKeyError?.status, 500);
+	assert.equal(apiKeyError?.message, "Failed to enable API key");
 });
 
 test("enable: empty id throws before fetch", async () => {

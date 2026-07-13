@@ -28,10 +28,10 @@ test("get: GET /api/api-key/v1/:id", async () => {
 	});
 	const fetchMock = mockFetch(jsonResponse(payload));
 
-	const { response, error } = await createClient().apiKey.get(KEY_ID);
+	const { apiKey, apiKeyError } = await createClient().apiKey.get(KEY_ID);
 
-	assert.equal(error, null);
-	assert.deepEqual(response, payload);
+	assert.equal(apiKeyError, null);
+	assert.deepEqual(apiKey, payload);
 
 	const call = getCall(fetchMock);
 	assert.equal(call.url, `https://reloop.sh/api/api-key/v1/${KEY_ID}`);
@@ -52,16 +52,16 @@ test("get: encodes id in path", async () => {
 	);
 });
 
-test("get: returns error on 404", async () => {
+test("get: returns apiKeyError on 404", async () => {
 	mockFetch(
 		errorJsonResponse({ message: "API key not found" }, 404, "Not Found"),
 	);
 
-	const { response, error } = await createClient().apiKey.get("key_missing");
+	const { apiKey, apiKeyError } = await createClient().apiKey.get("key_missing");
 
-	assert.equal(response, null);
-	assert.equal(error?.status, 404);
-	assert.equal(error?.message, "API key not found");
+	assert.equal(apiKey, null);
+	assert.equal(apiKeyError?.status, 404);
+	assert.equal(apiKeyError?.message, "API key not found");
 });
 
 test("get: empty id throws before fetch", async () => {

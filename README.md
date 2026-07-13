@@ -65,12 +65,12 @@ Manage keys with `reloop.apiKey` (one method per API route):
 | `enable(id)` / `disable(id)` | Toggle enabled state |
 
 ```typescript
-const { response: key, error } = await reloop.apiKey.create({
+const { apiKey, apiKeyError } = await reloop.apiKey.create({
   name: "Production Key",
 });
-if (error) throw error;
+if (apiKeyError) throw apiKeyError;
 
-console.log(key.id, key.key); // copy the secret now
+console.log(apiKey.id, apiKey.key);
 ```
 
 More examples: [reloop.sh/docs](https://reloop.sh/docs)

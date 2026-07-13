@@ -60,7 +60,8 @@ dist/
 | Topic | Rule |
 |-------|------|
 | Init | `new Reloop({ apiKey, baseUrl? })` — `apiKey` required; no `key` / `url` aliases |
-| HTTP errors | Return `{ response, error }` — do **not** throw for API/network failures |
+| HTTP errors (transport) | `ReloopResult` is `{ response, error }` |
+| API key results | Named fields: `{ apiKey, apiKeyError }` (list: `{ apiKeys, apiKeyError }`) |
 | Input validation | Throw `ReloopValidationError` before fetch (no network). Rules match backend (name 1–255, page ≥ 1, limit 1–100, non-empty ids) |
 | Api-key layout | One folder per op: `create/create.ts` + `create/create.test.ts`. Validation in the op file; tests cover wire + validation. Shared `fields.ts` / `paths.ts`; thin `api-key.ts` facade |
 | Mail & domain requests | **snake_case** JSON (`reply_to`, `click_tracking`) |
@@ -95,10 +96,10 @@ test("create: POST /api/api-key/v1/ with name body", async () => {
   const payload = apiKeyWithKeyFixture();
   const fetchMock = mockFetch(jsonResponse(payload, 201));
 
-  const { response, error } = await createClient().apiKey.create({ name: "Production Key" });
+  const { apiKey, apiKeyError } = await createClient().apiKey.create({ name: "Production Key" });
 
-  assert.equal(error, null);
-  assert.deepEqual(response, payload);
+  assert.equal(apiKeyError, null);
+  assert.deepEqual(apiKey, payload);
   const call = getCall(fetchMock);
   assert.equal(call.url, "https://reloop.sh/api/api-key/v1/");
   assert.equal(call.method, "POST");

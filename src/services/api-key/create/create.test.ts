@@ -21,12 +21,12 @@ test("create: POST /api/api-key/v1/ with name body", async () => {
 	const payload = apiKeyWithKeyFixture({ name: "Production Key" });
 	const fetchMock = mockFetch(jsonResponse(payload, 201, "Created"));
 
-	const { response, error } = await createClient().apiKey.create({
+	const { apiKey, apiKeyError } = await createClient().apiKey.create({
 		name: "Production Key",
 	});
 
-	assert.equal(error, null);
-	assert.deepEqual(response, payload);
+	assert.equal(apiKeyError, null);
+	assert.deepEqual(apiKey, payload);
 
 	const call = getCall(fetchMock);
 	assert.equal(call.url, "https://reloop.sh/api/api-key/v1/");
@@ -44,16 +44,16 @@ test("create: returns ReloopApiError on non-OK without throwing", async () => {
 		),
 	);
 
-	const { response, error } = await createClient().apiKey.create({
+	const { apiKey, apiKeyError } = await createClient().apiKey.create({
 		name: "Blocked Key",
 	});
 
-	assert.equal(response, null);
-	assert.ok(error);
-	assert.equal(error.name, "ReloopApiError");
-	assert.equal(error.status, 403);
-	assert.equal(error.message, "Forbidden");
-	assert.equal(error.body.why, "Insufficient permissions");
+	assert.equal(apiKey, null);
+	assert.ok(apiKeyError);
+	assert.equal(apiKeyError.name, "ReloopApiError");
+	assert.equal(apiKeyError.status, 403);
+	assert.equal(apiKeyError.message, "Forbidden");
+	assert.equal(apiKeyError.body.why, "Insufficient permissions");
 });
 
 test("create: uses custom baseUrl", async () => {

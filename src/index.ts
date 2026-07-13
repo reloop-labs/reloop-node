@@ -45,6 +45,10 @@ export type {
 	DeleteApiKeyResponse,
 	UpdateApiKeyParams,
 } from "@/services/api-key/types";
+export type {
+	ApiKeyListResult,
+	ApiKeyResult,
+} from "@/services/api-key/result";
 export { ReloopValidationError } from "@/services/api-key/errors";
 
 export * from "@/services/mail/mail";

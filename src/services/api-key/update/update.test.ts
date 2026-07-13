@@ -22,12 +22,12 @@ test("update: PATCH /api/api-key/v1/:id with name body", async () => {
 	const payload = apiKeyFixture({ name: "Updated Key Name" });
 	const fetchMock = mockFetch(jsonResponse(payload));
 
-	const { response, error } = await createClient().apiKey.update(KEY_ID, {
+	const { apiKey, apiKeyError } = await createClient().apiKey.update(KEY_ID, {
 		name: "Updated Key Name",
 	});
 
-	assert.equal(error, null);
-	assert.deepEqual(response, payload);
+	assert.equal(apiKeyError, null);
+	assert.deepEqual(apiKey, payload);
 
 	const call = getCall(fetchMock);
 	assert.equal(call.url, `https://reloop.sh/api/api-key/v1/${KEY_ID}`);
@@ -36,19 +36,19 @@ test("update: PATCH /api/api-key/v1/:id with name body", async () => {
 	assert.deepEqual(parseBody(call.body), { name: "Updated Key Name" });
 });
 
-test("update: returns error on non-OK", async () => {
+test("update: returns apiKeyError on non-OK", async () => {
 	mockFetch(
 		errorJsonResponse({ message: "API key not found" }, 404, "Not Found"),
 	);
 
-	const { response, error } = await createClient().apiKey.update(
+	const { apiKey, apiKeyError } = await createClient().apiKey.update(
 		"key_missing",
 		{ name: "Nope" },
 	);
 
-	assert.equal(response, null);
-	assert.equal(error?.status, 404);
-	assert.equal(error?.message, "API key not found");
+	assert.equal(apiKey, null);
+	assert.equal(apiKeyError?.status, 404);
+	assert.equal(apiKeyError?.message, "API key not found");
 });
 
 test("update: empty id throws before fetch", async () => {
