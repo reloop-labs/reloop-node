@@ -122,7 +122,6 @@ export interface RetryWebhookDeliveryResponse {
 	message: string;
 }
 
-/** Verified inbound webhook event (Reloop → your endpoint). */
 export interface WebhookEvent {
 	id: string;
 	event: string;
@@ -134,7 +133,7 @@ export interface VerifyWebhookParams {
 	payload: string | Buffer;
 	headers: Record<string, string | null | undefined>;
 	secret: string;
-	/** Max age of the request in seconds. Default: 300. */
+
 	tolerance?: number;
 }
 

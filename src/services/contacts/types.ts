@@ -61,7 +61,7 @@ export interface ListContactsParams {
 	limit?: number;
 	search?: string;
 	status?: ContactStatus;
-	/** When set, lists contacts in this group instead of the org-wide list. */
+
 	groupId?: string;
 }
 

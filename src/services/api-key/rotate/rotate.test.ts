@@ -17,8 +17,6 @@ afterEach(() => {
 	mock.restoreAll();
 });
 
-// --- wire ---
-
 test("rotate: POST /api/api-key/v1/rotate/:id and returns new secret", async () => {
 	const payload = apiKeyWithKeyFixture({
 		key: "rl_live_rotated_secret",
@@ -50,8 +48,6 @@ test("rotate: returns error on non-OK", async () => {
 	assert.equal(error?.status, 500);
 	assert.equal(error?.message, "Failed to rotate API key");
 });
-
-// --- validation (no fetch) ---
 
 test("rotate: empty id throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));

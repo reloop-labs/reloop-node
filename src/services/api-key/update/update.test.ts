@@ -18,8 +18,6 @@ afterEach(() => {
 	mock.restoreAll();
 });
 
-// --- wire ---
-
 test("update: PATCH /api/api-key/v1/:id with name body", async () => {
 	const payload = apiKeyFixture({ name: "Updated Key Name" });
 	const fetchMock = mockFetch(jsonResponse(payload));
@@ -52,8 +50,6 @@ test("update: returns error on non-OK", async () => {
 	assert.equal(error?.status, 404);
 	assert.equal(error?.message, "API key not found");
 });
-
-// --- validation (no fetch) ---
 
 test("update: empty id throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));

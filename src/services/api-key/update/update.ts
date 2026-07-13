@@ -17,7 +17,6 @@ function validateUpdateParams(
 	return { name: requireApiKeyName(params.name) };
 }
 
-/** PATCH `/api/api-key/v1/:id` */
 export async function updateApiKey(
 	client: ReloopClient,
 	id: string,

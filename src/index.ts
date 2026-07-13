@@ -6,14 +6,6 @@ import { DomainService } from "#src/services/domain/domain";
 import { MailService } from "#src/services/mail/mail";
 import { WebhookService } from "#src/services/webhook/webhook";
 
-/**
- * Reloop Node SDK entry. Construct with a required `apiKey` and optional `baseUrl`.
- *
- * ```ts
- * const reloop = new Reloop({ apiKey: "rl_..." });
- * const { response, error } = await reloop.apiKey.list();
- * ```
- */
 export class Reloop {
 	public apiKey: ApiKeyService;
 	public contacts: ContactsService;
@@ -34,7 +26,6 @@ export class Reloop {
 
 export default Reloop;
 
-// Options + Result (public)
 export type { ReloopClientOptions } from "#src/core/types";
 export {
 	ReloopApiError,
@@ -44,7 +35,6 @@ export {
 	err,
 } from "#src/core/result";
 
-// Api-key request/response types only (not ApiKeyService)
 export type {
 	ApiKey,
 	ApiKeyCreatedBy,
@@ -57,7 +47,6 @@ export type {
 } from "#src/services/api-key/types";
 export { ReloopValidationError } from "#src/services/api-key/errors";
 
-// Other resources keep current export style for this release
 export * from "#src/services/mail/mail";
 export * from "#src/services/mail/types";
 export * from "#src/services/contacts/contacts";

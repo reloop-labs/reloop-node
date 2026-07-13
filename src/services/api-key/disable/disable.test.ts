@@ -17,8 +17,6 @@ afterEach(() => {
 	mock.restoreAll();
 });
 
-// --- wire ---
-
 test("disable: POST /api/api-key/v1/disable/:id", async () => {
 	const payload = apiKeyFixture({ enabled: false, event: "evt_disable" });
 	const fetchMock = mockFetch(jsonResponse(payload));
@@ -47,8 +45,6 @@ test("disable: returns error on non-OK", async () => {
 	assert.equal(error?.status, 500);
 	assert.equal(error?.message, "Failed to disable API key");
 });
-
-// --- validation (no fetch) ---
 
 test("disable: empty id throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));

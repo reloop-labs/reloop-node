@@ -1,6 +1,5 @@
-/**
- * Shared fixtures for api-key *.test.ts files (not shipped — tests only).
- */
+
+
 import assert from "node:assert/strict";
 import { mock } from "node:test";
 import { Reloop } from "reloop-email";
@@ -10,7 +9,6 @@ export const BASE_URL = "https://reloop.sh";
 export const TEST_API_KEY = "rl_test";
 export const KEY_ID = "key_123456789";
 
-/** Full ApiKey wire shape (list/get/update/enable/disable). */
 export function apiKeyFixture(overrides: Record<string, unknown> = {}) {
 	return {
 		id: KEY_ID,
@@ -38,7 +36,6 @@ export function apiKeyFixture(overrides: Record<string, unknown> = {}) {
 	};
 }
 
-/** Create/rotate response that includes the secret once. */
 export function apiKeyWithKeyFixture(overrides: Record<string, unknown> = {}) {
 	return {
 		id: KEY_ID,

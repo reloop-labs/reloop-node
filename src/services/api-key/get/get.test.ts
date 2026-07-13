@@ -17,8 +17,6 @@ afterEach(() => {
 	mock.restoreAll();
 });
 
-// --- wire ---
-
 test("get: GET /api/api-key/v1/:id", async () => {
 	const payload = apiKeyFixture({
 		createdBy: {
@@ -66,8 +64,6 @@ test("get: returns error on 404", async () => {
 	assert.equal(error?.message, "API key not found");
 });
 
-// --- validation (no fetch) ---
-
 test("get: empty id throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
@@ -80,8 +76,8 @@ test("get: empty id throws before fetch", async () => {
 test("get: non-string id throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
-		// @ts-expect-error intentional
-		() => createClient().apiKey.get(null),
+
+		() => createClient().apiKey.get(null as unknown as string),
 		ReloopValidationError,
 	);
 	assertNoFetch(fetchMock);

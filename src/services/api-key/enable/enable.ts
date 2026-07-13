@@ -4,7 +4,6 @@ import { requireApiKeyId } from "#src/services/api-key/fields";
 import { apiKeyEnable } from "#src/services/api-key/paths";
 import type { ApiKey } from "#src/services/api-key/types";
 
-/** POST `/api/api-key/v1/enable/:id` */
 export async function enableApiKey(
 	client: ReloopClient,
 	id: string,

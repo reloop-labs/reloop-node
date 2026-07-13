@@ -17,8 +17,6 @@ afterEach(() => {
 	mock.restoreAll();
 });
 
-// --- wire ---
-
 test("delete: DELETE /api/api-key/v1/:id", async () => {
 	const payload = deleteResponseFixture();
 	const fetchMock = mockFetch(jsonResponse(payload));
@@ -46,8 +44,6 @@ test("delete: returns error on non-OK", async () => {
 	assert.equal(error?.status, 404);
 	assert.equal(error?.message, "API key not found");
 });
-
-// --- validation (no fetch) ---
 
 test("delete: empty id throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));

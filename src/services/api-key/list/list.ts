@@ -85,7 +85,6 @@ function validateListParams(
 	return out;
 }
 
-/** GET `/api/api-key/v1/` — list with optional page, limit, enabled, userId, q. */
 export async function listApiKeys(
 	client: ReloopClient,
 	params?: ApiKeyListParams,

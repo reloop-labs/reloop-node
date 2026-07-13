@@ -17,7 +17,6 @@ function validateCreateParams(
 	return { name: requireApiKeyName(params.name) };
 }
 
-/** POST `/api/api-key/v1/` — creates a key; response includes the secret once. */
 export async function createApiKey(
 	client: ReloopClient,
 	params: CreateApiKeyParams,

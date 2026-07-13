@@ -4,7 +4,6 @@ import { requireApiKeyId } from "#src/services/api-key/fields";
 import { apiKeyRotate } from "#src/services/api-key/paths";
 import type { ApiKeyWithKey } from "#src/services/api-key/types";
 
-/** POST `/api/api-key/v1/rotate/:id` — returns a new secret once. */
 export async function rotateApiKey(
 	client: ReloopClient,
 	id: string,

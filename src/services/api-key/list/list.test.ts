@@ -16,8 +16,6 @@ afterEach(() => {
 	mock.restoreAll();
 });
 
-// --- wire ---
-
 test("list: GET /api/api-key/v1/ with no query", async () => {
 	const payload = listResponseFixture();
 	const fetchMock = mockFetch(jsonResponse(payload));
@@ -96,8 +94,6 @@ test("list: returns error on non-OK", async () => {
 	assert.equal(error?.message, "Unauthorized");
 });
 
-// --- validation (no fetch) ---
-
 test("list: page < 1 throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
@@ -127,8 +123,9 @@ test("list: limit > 100 throws before fetch", async () => {
 test("list: non-boolean enabled throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
-		// @ts-expect-error intentional
-		() => createClient().apiKey.list({ enabled: "yes" }),
+
+		() =>
+			createClient().apiKey.list({ enabled: "yes" as unknown as boolean }),
 		ReloopValidationError,
 	);
 	assertNoFetch(fetchMock);

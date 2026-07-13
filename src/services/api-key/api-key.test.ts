@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { createClient } from "#src/services/api-key/test-helpers";
 
-/** Backend wire ops only — must stay 1:1 with `/api/api-key/v1`. */
 const WIRE_METHODS = [
 	"create",
 	"list",

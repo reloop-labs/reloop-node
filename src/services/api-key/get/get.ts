@@ -4,7 +4,6 @@ import { requireApiKeyId } from "#src/services/api-key/fields";
 import { apiKeyById } from "#src/services/api-key/paths";
 import type { ApiKey } from "#src/services/api-key/types";
 
-/** GET `/api/api-key/v1/:id` */
 export async function getApiKey(
 	client: ReloopClient,
 	id: string,

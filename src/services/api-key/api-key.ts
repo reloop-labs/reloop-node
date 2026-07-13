@@ -18,10 +18,6 @@ import type {
 } from "#src/services/api-key/types";
 import { updateApiKey } from "#src/services/api-key/update/update";
 
-/**
- * API key resource module — one method per backend route under `/api/api-key/v1`.
- * Invalid input throws {@link ReloopValidationError} before any HTTP call.
- */
 export class ApiKeyService {
 	constructor(private readonly client: ReloopClient) {}
 

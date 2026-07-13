@@ -17,8 +17,6 @@ afterEach(() => {
 	mock.restoreAll();
 });
 
-// --- wire ---
-
 test("create: POST /api/api-key/v1/ with name body", async () => {
 	const payload = apiKeyWithKeyFixture({ name: "Production Key" });
 	const fetchMock = mockFetch(jsonResponse(payload, 201, "Created"));
@@ -81,8 +79,6 @@ test("create: trims name before sending", async () => {
 	assert.deepEqual(parseBody(getCall(fetchMock).body), { name: "Trimmed" });
 });
 
-// --- validation (no fetch) ---
-
 test("create: empty name throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
@@ -108,8 +104,8 @@ test("create: whitespace-only name throws before fetch", async () => {
 test("create: missing params throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
-		// @ts-expect-error intentional invalid call
-		() => createClient().apiKey.create(),
+
+		() => (createClient().apiKey as { create: (p?: unknown) => Promise<unknown> }).create(),
 		ReloopValidationError,
 	);
 	assertNoFetch(fetchMock);

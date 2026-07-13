@@ -10,7 +10,7 @@ import {
 const DEFAULT_BASE_URL = "https://reloop.sh";
 
 export class ReloopClient {
-	/** Credential used for `x-api-key`; not part of the public surface. */
+
 	readonly #apiKey: string;
 	readonly #baseUrl: string;
 
@@ -45,7 +45,7 @@ export class ReloopClient {
 				try {
 					errorBody = (await response.json()) as ReloopApiErrorBody;
 				} catch {
-					// ignore non-JSON error bodies
+
 				}
 				return err(
 					new ReloopApiError(
