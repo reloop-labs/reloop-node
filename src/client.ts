@@ -7,27 +7,31 @@ import {
 	type ReloopResult,
 } from "./core/result";
 
+const DEFAULT_BASE_URL = "https://reloop.sh";
+
 export class ReloopClient {
-	public readonly apiKey: string;
-	public readonly baseUrl: string;
+	/** Credential used for `x-api-key`; not part of the public surface. */
+	readonly #apiKey: string;
+	readonly #baseUrl: string;
 
 	constructor(options: ReloopClientOptions) {
-		const apiKey = options.apiKey || options.key;
+		const apiKey =
+			typeof options.apiKey === "string" ? options.apiKey.trim() : "";
 		if (!apiKey) {
 			throw new Error("Reloop SDK requires an apiKey.");
 		}
-		this.apiKey = apiKey;
-		this.baseUrl = options.baseUrl || options.url || "https://reloop.sh";
+		this.#apiKey = apiKey;
+		this.#baseUrl = options.baseUrl || DEFAULT_BASE_URL;
 	}
 
 	async fetch<T>(
 		path: string,
 		options: RequestInit = {},
 	): Promise<ReloopResult<T>> {
-		const url = `${this.baseUrl}${path}`;
+		const url = `${this.#baseUrl}${path}`;
 
 		const headers = new Headers(options.headers);
-		headers.set("x-api-key", this.apiKey);
+		headers.set("x-api-key", this.#apiKey);
 		headers.set("Content-Type", "application/json");
 
 		try {
@@ -60,9 +64,7 @@ export class ReloopClient {
 		} catch (cause) {
 			const message =
 				cause instanceof Error ? cause.message : "Network request failed";
-			return err(
-				new ReloopApiError(0, "Network Error", { message }),
-			);
+			return err(new ReloopApiError(0, "Network Error", { message }));
 		}
 	}
 }
