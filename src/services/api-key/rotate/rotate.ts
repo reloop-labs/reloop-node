@@ -1,8 +1,8 @@
-import type { ReloopClient } from "#src/client";
-import type { ReloopResult } from "#src/core/result";
-import { requireApiKeyId } from "#src/services/api-key/fields";
-import { apiKeyRotate } from "#src/services/api-key/paths";
-import type { ApiKeyWithKey } from "#src/services/api-key/types";
+import type { ReloopClient } from "@/client";
+import type { ReloopResult } from "@/core/result";
+import { requireApiKeyId } from "@/services/api-key/fields";
+import { apiKeyRotate } from "@/services/api-key/paths";
+import type { ApiKeyWithKey } from "@/services/api-key/types";
 
 export async function rotateApiKey(
 	client: ReloopClient,

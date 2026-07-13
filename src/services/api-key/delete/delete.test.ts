@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { afterEach, mock, test } from "node:test";
-import { ReloopValidationError } from "reloop-email";
+import { afterEach, mock, test } from "bun:test";
+import { ReloopValidationError } from "@/index";
 import {
 	assertAuthAndJson,
 	assertNoFetch,
@@ -11,10 +11,10 @@ import {
 	jsonResponse,
 	KEY_ID,
 	mockFetch,
-} from "#src/services/api-key/test-helpers";
+} from "@/services/api-key/test-helpers";
 
 afterEach(() => {
-	mock.restoreAll();
+	mock.restore();
 });
 
 test("delete: DELETE /api/api-key/v1/:id", async () => {

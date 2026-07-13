@@ -1,8 +1,8 @@
-import type { ReloopClient } from "#src/client";
-import type { ReloopResult } from "#src/core/result";
-import { requireApiKeyId } from "#src/services/api-key/fields";
-import { apiKeyDisable } from "#src/services/api-key/paths";
-import type { ApiKey } from "#src/services/api-key/types";
+import type { ReloopClient } from "@/client";
+import type { ReloopResult } from "@/core/result";
+import { requireApiKeyId } from "@/services/api-key/fields";
+import { apiKeyDisable } from "@/services/api-key/paths";
+import type { ApiKey } from "@/services/api-key/types";
 
 export async function disableApiKey(
 	client: ReloopClient,

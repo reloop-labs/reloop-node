@@ -1,4 +1,4 @@
-import { ReloopValidationError } from "#src/services/api-key/errors";
+import { ReloopValidationError } from "@/services/api-key/errors";
 
 const NAME_MIN = 1;
 const NAME_MAX = 255;

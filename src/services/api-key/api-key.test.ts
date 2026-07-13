@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
-import { createClient } from "#src/services/api-key/test-helpers";
+import { test } from "bun:test";
+import { createClient } from "@/services/api-key/test-helpers";
 
 const WIRE_METHODS = [
 	"create",

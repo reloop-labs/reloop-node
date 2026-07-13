@@ -1,9 +1,7 @@
-
-
 import assert from "node:assert/strict";
-import { mock } from "node:test";
-import { Reloop } from "reloop-email";
-import type { ReloopClientOptions } from "#src/core/types";
+import { mock } from "bun:test";
+import { Reloop } from "@/index";
+import type { ReloopClientOptions } from "@/core/types";
 
 export const BASE_URL = "https://reloop.sh";
 export const TEST_API_KEY = "rl_test";
@@ -81,15 +79,28 @@ export function createClient(options: Partial<ReloopClientOptions> = {}) {
 	});
 }
 
+export type FetchMock = ReturnType<typeof mock<typeof fetch>>;
+
 export function mockFetch(
-	responseOrFn: Response | ((url: string | URL, init?: RequestInit) => Response | Promise<Response>),
-) {
-	return mock.method(globalThis, "fetch", async (url: string | URL, init?: RequestInit) => {
+	responseOrFn:
+		| Response
+		| ((
+				url: string | URL | Request,
+				init?: RequestInit,
+		  ) => Response | Promise<Response>),
+): FetchMock {
+	const fn = mock(async (url: string | URL | Request, init?: RequestInit) => {
 		if (typeof responseOrFn === "function") {
 			return responseOrFn(url, init);
 		}
 		return responseOrFn;
-	});
+	}) as FetchMock;
+	globalThis.fetch = fn as unknown as typeof fetch;
+	return fn;
+}
+
+export function restoreFetch() {
+	mock.restore();
 }
 
 export function jsonResponse(body: unknown, status = 200, statusText = "OK") {
@@ -108,14 +119,11 @@ export function errorJsonResponse(
 	return jsonResponse(body, status, statusText);
 }
 
-export function getCall(
-	fetchMock: ReturnType<typeof mockFetch>,
-	index = 0,
-) {
+export function getCall(fetchMock: FetchMock, index = 0) {
 	const call = fetchMock.mock.calls[index];
 	assert.ok(call, `expected fetch call at index ${index}`);
-	const url = call.arguments[0];
-	const init = (call.arguments[1] ?? {}) as RequestInit;
+	const url = call[0];
+	const init = (call[1] ?? {}) as RequestInit;
 	const headers =
 		init.headers instanceof Headers
 			? init.headers
@@ -139,6 +147,6 @@ export function parseBody(body: unknown) {
 	return JSON.parse(body as string) as unknown;
 }
 
-export function assertNoFetch(fetchMock: ReturnType<typeof mockFetch>) {
+export function assertNoFetch(fetchMock: FetchMock) {
 	assert.equal(fetchMock.mock.calls.length, 0, "expected no HTTP call");
 }

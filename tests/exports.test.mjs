@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
-import * as sdk from "../dist/index.js";
-import ReloopDefault, { Reloop } from "../dist/index.js";
+import { test } from "bun:test";
+import * as sdk from "@/index";
+import ReloopDefault, { Reloop } from "@/index";
 
 test("Reloop is the public entry (named + default)", () => {
 	assert.equal(typeof Reloop, "function");

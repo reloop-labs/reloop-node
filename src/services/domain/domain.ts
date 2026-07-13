@@ -1,5 +1,5 @@
-import type { ReloopClient } from "#src/client";
-import type { ReloopResult } from "#src/core/result";
+import type { ReloopClient } from "@/client";
+import type { ReloopResult } from "@/core/result";
 import type {
 	CreateDomainParams,
 	Domain,
@@ -10,7 +10,7 @@ import type {
 	ForwardDnsResponse,
 	ListDomainsParams,
 	UpdateDomainParams,
-} from "#src/services/domain/types";
+} from "@/services/domain/types";
 
 export class DomainService {
 	constructor(private readonly client: ReloopClient) {}

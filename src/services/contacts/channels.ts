@@ -1,5 +1,5 @@
-import type { ReloopClient } from "#src/client";
-import type { ReloopResult } from "#src/core/result";
+import type { ReloopClient } from "@/client";
+import type { ReloopResult } from "@/core/result";
 import type {
 	AddContactToChannelParams,
 	AddContactToChannelResponse,
@@ -12,7 +12,7 @@ import type {
 	UpdateChannelParams,
 	UpdateContactChannelParams,
 	UpdateContactChannelResponse,
-} from "#src/services/contacts/types";
+} from "@/services/contacts/types";
 
 export class ContactChannelsService {
 	constructor(private readonly client: ReloopClient) {}

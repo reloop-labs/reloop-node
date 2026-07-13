@@ -10,9 +10,8 @@ export default defineConfig({
 	dts: true,
 	clean: true,
 	esbuildOptions(options) {
-		// Map #src/* → src/* (Node package imports / absolute style)
 		options.alias = {
-			"#src": path.join(root, "src"),
+			"@": path.join(root, "src"),
 		};
 	},
 });

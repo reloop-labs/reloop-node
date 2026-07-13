@@ -13,14 +13,11 @@
 			"require": "./dist/index.cjs"
 		}
 	},
-	"imports": {
-		"#src/*": "./src/*.ts"
-	},
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
 		"typecheck": "tsc --noEmit",
-		"test": "npm run build && node --test --experimental-strip-types $(find src tests \\( -name '*.test.ts' -o -name '*.test.mjs' \\) | sort)"
+		"test": "bun test"
 	},
 	"keywords": [
 		"reloop",
@@ -34,6 +31,7 @@
 		"url": "git+https://github.com/reloop-labs/reloop-node.git"
 	},
 	"devDependencies": {
+		"@types/bun": "^1.3.14",
 		"@types/node": "^20.0.0",
 		"tsup": "^8.0.0",
 		"typescript": "^5.0.0"

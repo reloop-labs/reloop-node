@@ -1,0 +1,3 @@
+[test]
+# Prefer colocated src/**/*.test.ts and tests/**/*.test.*
+root = "."

@@ -9,11 +9,10 @@
 		"forceConsistentCasingInFileNames": true,
 		"declaration": true,
 		"outDir": "./dist",
-		"types": ["node"],
+		"types": ["node", "bun"],
 		"baseUrl": ".",
 		"paths": {
-			"#src/*": ["src/*"],
-			"reloop-email": ["dist/index.d.ts"]
+			"@/*": ["src/*"]
 		}
 	},
 	"include": ["src/**/*"],

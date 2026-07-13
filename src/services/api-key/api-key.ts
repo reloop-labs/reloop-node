@@ -1,12 +1,12 @@
-import type { ReloopClient } from "#src/client";
-import type { ReloopResult } from "#src/core/result";
-import { createApiKey } from "#src/services/api-key/create/create";
-import { deleteApiKey } from "#src/services/api-key/delete/delete";
-import { disableApiKey } from "#src/services/api-key/disable/disable";
-import { enableApiKey } from "#src/services/api-key/enable/enable";
-import { getApiKey } from "#src/services/api-key/get/get";
-import { listApiKeys } from "#src/services/api-key/list/list";
-import { rotateApiKey } from "#src/services/api-key/rotate/rotate";
+import type { ReloopClient } from "@/client";
+import type { ReloopResult } from "@/core/result";
+import { createApiKey } from "@/services/api-key/create/create";
+import { deleteApiKey } from "@/services/api-key/delete/delete";
+import { disableApiKey } from "@/services/api-key/disable/disable";
+import { enableApiKey } from "@/services/api-key/enable/enable";
+import { getApiKey } from "@/services/api-key/get/get";
+import { listApiKeys } from "@/services/api-key/list/list";
+import { rotateApiKey } from "@/services/api-key/rotate/rotate";
 import type {
 	ApiKey,
 	ApiKeyListParams,
@@ -15,8 +15,8 @@ import type {
 	CreateApiKeyParams,
 	DeleteApiKeyResponse,
 	UpdateApiKeyParams,
-} from "#src/services/api-key/types";
-import { updateApiKey } from "#src/services/api-key/update/update";
+} from "@/services/api-key/types";
+import { updateApiKey } from "@/services/api-key/update/update";
 
 export class ApiKeyService {
 	constructor(private readonly client: ReloopClient) {}

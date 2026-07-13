@@ -1,6 +1,6 @@
-import type { ReloopClient } from "#src/client";
-import type { ReloopResult } from "#src/core/result";
-import type { SendMailParams, SendMailResponse } from "#src/services/mail/types";
+import type { ReloopClient } from "@/client";
+import type { ReloopResult } from "@/core/result";
+import type { SendMailParams, SendMailResponse } from "@/services/mail/types";
 
 export class MailService {
 	constructor(private readonly client: ReloopClient) {}

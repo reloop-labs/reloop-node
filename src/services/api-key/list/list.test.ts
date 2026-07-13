@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { afterEach, mock, test } from "node:test";
-import { ReloopValidationError } from "reloop-email";
+import { afterEach, mock, test } from "bun:test";
+import { ReloopValidationError } from "@/index";
 import {
 	assertAuthAndJson,
 	assertNoFetch,
@@ -10,10 +10,10 @@ import {
 	jsonResponse,
 	listResponseFixture,
 	mockFetch,
-} from "#src/services/api-key/test-helpers";
+} from "@/services/api-key/test-helpers";
 
 afterEach(() => {
-	mock.restoreAll();
+	mock.restore();
 });
 
 test("list: GET /api/api-key/v1/ with no query", async () => {

@@ -1,13 +1,15 @@
 import assert from "node:assert/strict";
-import { afterEach, mock, test } from "node:test";
-import { Reloop } from "../dist/index.js";
+import { afterEach, mock, test } from "bun:test";
+import { Reloop } from "@/index";
 
 function mockFetch(response) {
-	return mock.method(globalThis, "fetch", async () => response);
+	const fn = mock(async () => response);
+	globalThis.fetch = fn;
+	return fn;
 }
 
 afterEach(() => {
-	mock.restoreAll();
+	mock.restore();
 });
 
 test("send posts to /api/mail/v1/send with snake_case body", async () => {
@@ -37,12 +39,12 @@ test("send posts to /api/mail/v1/send with snake_case body", async () => {
 	assert.equal(response?.messageId, "msg_123456789");
 	assert.equal(response?.id, "log_123456789");
 	assert.equal(
-		fetchMock.mock.calls[0]?.arguments[0],
+		fetchMock.mock.calls[0]?.[0],
 		"https://reloop.sh/api/mail/v1/send",
 	);
-	assert.equal(fetchMock.mock.calls[0]?.arguments[1]?.method, "POST");
+	assert.equal(fetchMock.mock.calls[0]?.[1]?.method, "POST");
 
-	const body = JSON.parse(fetchMock.mock.calls[0]?.arguments[1]?.body);
+	const body = JSON.parse(fetchMock.mock.calls[0]?.[1]?.body);
 	assert.equal(body.from, "Reloop <hello@send.example.com>");
 	assert.equal(body.to, "user@example.com");
 	assert.equal(body.reply_to, "support@example.com");
@@ -71,7 +73,7 @@ test("send supports template variables", async () => {
 		},
 	});
 
-	const body = JSON.parse(fetchMock.mock.calls[0]?.arguments[1]?.body);
+	const body = JSON.parse(fetchMock.mock.calls[0]?.[1]?.body);
 	assert.deepEqual(body.to, ["user@example.com", "admin@example.com"]);
 	assert.equal(body.template.id, "tpl_123456789");
 	assert.equal(body.template.variables.first_name, "Ada");

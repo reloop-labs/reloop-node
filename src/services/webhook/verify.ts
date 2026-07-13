@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import type { VerifyWebhookParams, WebhookEvent } from "#src/services/webhook/types";
-import { WebhookSignatureVerificationError } from "#src/services/webhook/types";
+import type { VerifyWebhookParams, WebhookEvent } from "@/services/webhook/types";
+import { WebhookSignatureVerificationError } from "@/services/webhook/types";
 
 export const WEBHOOK_SIGNATURE_HEADER = "x-webhook-signature";
 export const WEBHOOK_TIMESTAMP_HEADER = "x-webhook-timestamp";

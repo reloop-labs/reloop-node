@@ -13,12 +13,12 @@ Official npm package: **`reloop-email`**. This SDK is the **reference implementa
 ```bash
 git clone git@github.com:reloop-labs/reloop-node.git
 cd reloop-node
-npm install
-npm test
-npm run build
+bun install
+bun test
+bun run build
 ```
 
-Requires **Node.js 20+** (CI uses Node 22).
+Requires **Bun** (tests) and **Node.js 20+** for the published package target (CI may use Node 22 for build tooling).
 
 ---
 
@@ -69,7 +69,8 @@ dist/
 | Types | Request/response interfaces in each service’s `types.ts` |
 | Public exports | `Reloop` (+ default), options, Result/error types, api-key **types**, other resource modules as today. Do **not** export constructable `ReloopClient` or `ApiKeyService` |
 | Tests | Prefer `foo.ts` + `foo.test.ts` next to source. Mock `fetch`; assert path, method, headers, body, success + error Result |
-| Imports | **Absolute only** via package imports: `#src/...` (never `../`). Public package surface in tests: `reloop-email` |
+| Imports | **Absolute only**: `@/...` (never `../`). Maps to `src/*` via tsconfig + Bun + tsup |
+| Test runner | **Bun** — `bun test` (see `package.json` scripts) |
 | README | Prerequisites, strict init, send example, api-key table, link to docs |
 
 ### Example: paired create test
@@ -86,7 +87,7 @@ import {
   jsonResponse,
   mockFetch,
   parseBody,
-} from "#src/services/api-key/test-helpers";
+} from "@/services/api-key/test-helpers";
 
 afterEach(() => mock.restoreAll());
 

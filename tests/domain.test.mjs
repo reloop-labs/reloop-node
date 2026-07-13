@@ -1,13 +1,15 @@
 import assert from "node:assert/strict";
-import { afterEach, mock, test } from "node:test";
-import { Reloop } from "../dist/index.js";
+import { afterEach, mock, test } from "bun:test";
+import { Reloop } from "@/index";
 
 function mockFetch(response) {
-	return mock.method(globalThis, "fetch", async () => response);
+	const fn = mock(async () => response);
+	globalThis.fetch = fn;
+	return fn;
 }
 
 afterEach(() => {
-	mock.restoreAll();
+	mock.restore();
 });
 
 test("create posts to /api/domain/v1/create", async () => {
@@ -24,8 +26,8 @@ test("create posts to /api/domain/v1/create", async () => {
 	assert.equal(error, null);
 	assert.equal(response?.id, "dom_1");
 	assert.equal(fetchMock.mock.calls.length, 1);
-	assert.equal(fetchMock.mock.calls[0]?.arguments[0], "https://reloop.sh/api/domain/v1/create");
-	assert.equal(fetchMock.mock.calls[0]?.arguments[1]?.method, "POST");
+	assert.equal(fetchMock.mock.calls[0]?.[0], "https://reloop.sh/api/domain/v1/create");
+	assert.equal(fetchMock.mock.calls[0]?.[1]?.method, "POST");
 });
 
 test("list builds query params", async () => {
@@ -43,7 +45,7 @@ test("list builds query params", async () => {
 
 	assert.equal(error, null);
 	assert.equal(
-		fetchMock.mock.calls[0]?.arguments[0],
+		fetchMock.mock.calls[0]?.[0],
 		"https://reloop.sh/api/domain/v1/list?page=2&limit=5&q=example&status=active",
 	);
 });
@@ -66,7 +68,7 @@ test("getNameservers calls /api/domain/v1/nameservers/:id", async () => {
 	assert.equal(error, null);
 	assert.equal(response?.dnsProvider, "cloudflare");
 	assert.equal(
-		fetchMock.mock.calls[0]?.arguments[0],
+		fetchMock.mock.calls[0]?.[0],
 		"https://reloop.sh/api/domain/v1/nameservers/dom_1",
 	);
 });
@@ -78,15 +80,15 @@ test("verify and forwardDns use verify routes", async () => {
 
 	await reloop.domain.verify("dom_1");
 	assert.equal(
-		fetchMock.mock.calls[0]?.arguments[0],
+		fetchMock.mock.calls[0]?.[0],
 		"https://reloop.sh/api/domain/v1/verify/dom_1",
 	);
 
-	fetchMock.mock.restore();
+	mock.restore();
 	const forwardMock = mockFetch(Response.json({ success: true }));
 	await reloop.domain.forwardDns("dom_1", { email: "admin@example.com" });
 	assert.equal(
-		forwardMock.mock.calls[0]?.arguments[0],
+		forwardMock.mock.calls[0]?.[0],
 		"https://reloop.sh/api/domain/v1/verify/dom_1/forward-dns",
 	);
 });

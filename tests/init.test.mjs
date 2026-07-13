@@ -1,13 +1,15 @@
 import assert from "node:assert/strict";
-import { afterEach, mock, test } from "node:test";
-import { Reloop } from "../dist/index.js";
+import { afterEach, mock, test } from "bun:test";
+import { Reloop } from "@/index";
 
 function mockFetch(response) {
-	return mock.method(globalThis, "fetch", async () => response);
+	const fn = mock(async () => response);
+	globalThis.fetch = fn;
+	return fn;
 }
 
 afterEach(() => {
-	mock.restoreAll();
+	mock.restore();
 });
 
 test("constructs with apiKey only", () => {
@@ -63,12 +65,12 @@ test("baseUrl is used for requests", async () => {
 	});
 
 	assert.equal(
-		fetchMock.mock.calls[0]?.arguments[0],
+		fetchMock.mock.calls[0]?.[0],
 		"https://custom.example/api/mail/v1/send",
 	);
 	assert.equal(
-		fetchMock.mock.calls[0]?.arguments[1]?.headers?.get?.("x-api-key") ??
-			new Headers(fetchMock.mock.calls[0]?.arguments[1]?.headers).get(
+		fetchMock.mock.calls[0]?.[1]?.headers?.get?.("x-api-key") ??
+			new Headers(fetchMock.mock.calls[0]?.[1]?.headers).get(
 				"x-api-key",
 			),
 		"rl_test",
@@ -97,7 +99,7 @@ test("url alias does not set the base URL", async () => {
 	});
 
 	assert.equal(
-		fetchMock.mock.calls[0]?.arguments[0],
+		fetchMock.mock.calls[0]?.[0],
 		"https://reloop.sh/api/mail/v1/send",
 	);
 });
@@ -121,7 +123,7 @@ test("default baseUrl is https://reloop.sh", async () => {
 	});
 
 	assert.equal(
-		fetchMock.mock.calls[0]?.arguments[0],
+		fetchMock.mock.calls[0]?.[0],
 		"https://reloop.sh/api/mail/v1/send",
 	);
 });
