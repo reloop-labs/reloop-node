@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
-import { ReloopValidationError } from "../../dist/index.js";
+import { ReloopValidationError } from "../../../dist/index.js";
 import {
 	apiKeyFixture,
 	assertAuthAndJson,
@@ -12,7 +12,7 @@ import {
 	KEY_ID,
 	mockFetch,
 	parseBody,
-} from "./_helpers.mjs";
+} from "./test-helpers.ts";
 
 afterEach(() => {
 	mock.restoreAll();
@@ -43,9 +43,10 @@ test("update: returns error on non-OK", async () => {
 		errorJsonResponse({ message: "API key not found" }, 404, "Not Found"),
 	);
 
-	const { response, error } = await createClient().apiKey.update("key_missing", {
-		name: "Nope",
-	});
+	const { response, error } = await createClient().apiKey.update(
+		"key_missing",
+		{ name: "Nope" },
+	);
 
 	assert.equal(response, null);
 	assert.equal(error?.status, 404);

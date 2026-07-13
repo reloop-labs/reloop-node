@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
-import { ReloopValidationError } from "../../dist/index.js";
+import { ReloopValidationError } from "../../../dist/index.js";
 import {
 	apiKeyFixture,
 	assertAuthAndJson,
@@ -11,7 +11,7 @@ import {
 	jsonResponse,
 	KEY_ID,
 	mockFetch,
-} from "./_helpers.mjs";
+} from "./test-helpers.ts";
 
 afterEach(() => {
 	mock.restoreAll();
@@ -48,7 +48,10 @@ test("get: encodes id in path", async () => {
 
 	await createClient().apiKey.get(id);
 
-	assert.equal(getCall(fetchMock).url, `https://reloop.sh/api/api-key/v1/${id}`);
+	assert.equal(
+		getCall(fetchMock).url,
+		`https://reloop.sh/api/api-key/v1/${id}`,
+	);
 });
 
 test("get: returns error on 404", async () => {
@@ -77,6 +80,7 @@ test("get: empty id throws before fetch", async () => {
 test("get: non-string id throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
+		// @ts-expect-error intentional
 		() => createClient().apiKey.get(null),
 		ReloopValidationError,
 	);

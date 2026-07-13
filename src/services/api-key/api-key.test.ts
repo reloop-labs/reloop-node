@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { createClient } from "./_helpers.mjs";
+import { createClient } from "./test-helpers.ts";
 
 /** Backend wire ops only — must stay 1:1 with `/api/api-key/v1`. */
 const WIRE_METHODS = [
@@ -12,7 +12,7 @@ const WIRE_METHODS = [
 	"rotate",
 	"enable",
 	"disable",
-];
+] as const;
 
 test("apiKey module exposes exactly the eight backend wire methods", () => {
 	const { apiKey } = createClient();
@@ -25,8 +25,10 @@ test("apiKey module exposes exactly the eight backend wire methods", () => {
 		);
 	}
 
-	const ownMethods = Object.getOwnPropertyNames(Object.getPrototypeOf(apiKey)).filter(
-		(name) => name !== "constructor" && typeof apiKey[name] === "function",
+	const ownMethods = Object.getOwnPropertyNames(
+		Object.getPrototypeOf(apiKey),
+	).filter(
+		(name) => name !== "constructor" && typeof (apiKey as Record<string, unknown>)[name] === "function",
 	);
 
 	assert.deepEqual(
@@ -39,5 +41,8 @@ test("apiKey module exposes exactly the eight backend wire methods", () => {
 test("apiKey.pause is not part of the public module", () => {
 	const { apiKey } = createClient();
 	assert.equal("pause" in apiKey, false);
-	assert.equal(apiKey.pause, undefined);
+	assert.equal(
+		(apiKey as { pause?: unknown }).pause,
+		undefined,
+	);
 });

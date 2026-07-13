@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
-import { ReloopValidationError } from "../../dist/index.js";
+import { ReloopValidationError } from "../../../dist/index.js";
 import {
 	assertAuthAndJson,
 	assertNoFetch,
@@ -10,7 +10,7 @@ import {
 	jsonResponse,
 	listResponseFixture,
 	mockFetch,
-} from "./_helpers.mjs";
+} from "./test-helpers.ts";
 
 afterEach(() => {
 	mock.restoreAll();
@@ -35,7 +35,9 @@ test("list: GET /api/api-key/v1/ with no query", async () => {
 });
 
 test("list: builds full query string from params", async () => {
-	const fetchMock = mockFetch(jsonResponse(listResponseFixture({ page: 2, limit: 5 })));
+	const fetchMock = mockFetch(
+		jsonResponse(listResponseFixture({ page: 2, limit: 5 })),
+	);
 
 	const { error } = await createClient().apiKey.list({
 		page: 2,
@@ -48,7 +50,10 @@ test("list: builds full query string from params", async () => {
 	assert.equal(error, null);
 	const { url } = getCall(fetchMock);
 	const parsed = new URL(url);
-	assert.equal(parsed.origin + parsed.pathname, "https://reloop.sh/api/api-key/v1/");
+	assert.equal(
+		parsed.origin + parsed.pathname,
+		"https://reloop.sh/api/api-key/v1/",
+	);
 	assert.equal(parsed.searchParams.get("page"), "2");
 	assert.equal(parsed.searchParams.get("limit"), "5");
 	assert.equal(parsed.searchParams.get("enabled"), "true");
@@ -80,7 +85,9 @@ test("list: omits undefined optional filters", async () => {
 });
 
 test("list: returns error on non-OK", async () => {
-	mockFetch(errorJsonResponse({ message: "Unauthorized" }, 401, "Unauthorized"));
+	mockFetch(
+		errorJsonResponse({ message: "Unauthorized" }, 401, "Unauthorized"),
+	);
 
 	const { response, error } = await createClient().apiKey.list({ page: 1 });
 
@@ -95,7 +102,7 @@ test("list: page < 1 throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
 		() => createClient().apiKey.list({ page: 0 }),
-		(err) => {
+		(err: unknown) => {
 			assert.ok(err instanceof ReloopValidationError);
 			assert.equal(err.field, "page");
 			return true;
@@ -108,7 +115,7 @@ test("list: limit > 100 throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
 		() => createClient().apiKey.list({ limit: 101 }),
-		(err) => {
+		(err: unknown) => {
 			assert.ok(err instanceof ReloopValidationError);
 			assert.equal(err.field, "limit");
 			return true;
@@ -120,6 +127,7 @@ test("list: limit > 100 throws before fetch", async () => {
 test("list: non-boolean enabled throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
+		// @ts-expect-error intentional
 		() => createClient().apiKey.list({ enabled: "yes" }),
 		ReloopValidationError,
 	);

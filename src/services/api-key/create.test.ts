@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
-import { ReloopValidationError } from "../../dist/index.js";
+import { ReloopValidationError } from "../../../dist/index.js";
 import {
 	apiKeyWithKeyFixture,
 	assertAuthAndJson,
@@ -11,7 +11,7 @@ import {
 	jsonResponse,
 	mockFetch,
 	parseBody,
-} from "./_helpers.mjs";
+} from "./test-helpers.ts";
 
 afterEach(() => {
 	mock.restoreAll();
@@ -72,7 +72,9 @@ test("create: uses custom baseUrl", async () => {
 });
 
 test("create: trims name before sending", async () => {
-	const fetchMock = mockFetch(jsonResponse(apiKeyWithKeyFixture({ name: "Trimmed" }), 201));
+	const fetchMock = mockFetch(
+		jsonResponse(apiKeyWithKeyFixture({ name: "Trimmed" }), 201),
+	);
 
 	await createClient().apiKey.create({ name: "  Trimmed  " });
 
@@ -85,7 +87,7 @@ test("create: empty name throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
 		() => createClient().apiKey.create({ name: "" }),
-		(err) => {
+		(err: unknown) => {
 			assert.ok(err instanceof ReloopValidationError);
 			assert.equal(err.field, "name");
 			return true;
@@ -106,6 +108,7 @@ test("create: whitespace-only name throws before fetch", async () => {
 test("create: missing params throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
+		// @ts-expect-error intentional invalid call
 		() => createClient().apiKey.create(),
 		ReloopValidationError,
 	);
@@ -116,7 +119,7 @@ test("create: name longer than 255 throws before fetch", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
 	await assert.rejects(
 		() => createClient().apiKey.create({ name: "x".repeat(256) }),
-		(err) => {
+		(err: unknown) => {
 			assert.ok(err instanceof ReloopValidationError);
 			assert.match(err.message, /255/);
 			return true;

@@ -1,13 +1,17 @@
+/**
+ * Shared fixtures for api-key *.test.ts files (not shipped — tests only).
+ */
 import assert from "node:assert/strict";
 import { mock } from "node:test";
-import { Reloop } from "../../dist/index.js";
+import { Reloop } from "../../../dist/index.js";
+import type { ReloopClientOptions } from "../../core/types";
 
 export const BASE_URL = "https://reloop.sh";
 export const TEST_API_KEY = "rl_test";
 export const KEY_ID = "key_123456789";
 
 /** Full ApiKey wire shape (list/get/update/enable/disable). */
-export function apiKeyFixture(overrides = {}) {
+export function apiKeyFixture(overrides: Record<string, unknown> = {}) {
 	return {
 		id: KEY_ID,
 		name: "Production Key",
@@ -28,14 +32,14 @@ export function apiKeyFixture(overrides = {}) {
 		updatedAt: "2026-01-01T00:00:00.000Z",
 		permissions: null,
 		metadata: null,
-		object: "api_key",
+		object: "api_key" as const,
 		event: "evt_1",
 		...overrides,
 	};
 }
 
 /** Create/rotate response that includes the secret once. */
-export function apiKeyWithKeyFixture(overrides = {}) {
+export function apiKeyWithKeyFixture(overrides: Record<string, unknown> = {}) {
 	return {
 		id: KEY_ID,
 		name: "Production Key",
@@ -44,15 +48,15 @@ export function apiKeyWithKeyFixture(overrides = {}) {
 		createdAt: "2026-01-01T00:00:00.000Z",
 		updatedAt: "2026-01-01T00:00:00.000Z",
 		permissions: null,
-		object: "api_key",
+		object: "api_key" as const,
 		event: "evt_1",
 		...overrides,
 	};
 }
 
-export function listResponseFixture(overrides = {}) {
+export function listResponseFixture(overrides: Record<string, unknown> = {}) {
 	return {
-		object: "api_key",
+		object: "api_key" as const,
 		apiKeys: [apiKeyFixture()],
 		total: 1,
 		page: 1,
@@ -62,17 +66,17 @@ export function listResponseFixture(overrides = {}) {
 	};
 }
 
-export function deleteResponseFixture(overrides = {}) {
+export function deleteResponseFixture(overrides: Record<string, unknown> = {}) {
 	return {
 		id: KEY_ID,
 		message: "API key deleted",
-		object: "api_key",
+		object: "api_key" as const,
 		event: "evt_delete",
 		...overrides,
 	};
 }
 
-export function createClient(options = {}) {
+export function createClient(options: Partial<ReloopClientOptions> = {}) {
 	return new Reloop({
 		apiKey: TEST_API_KEY,
 		baseUrl: BASE_URL,
@@ -80,12 +84,10 @@ export function createClient(options = {}) {
 	});
 }
 
-/**
- * Mock global fetch. Pass a Response, or a function (url, init) => Response.
- * @returns {ReturnType<typeof mock.method>}
- */
-export function mockFetch(responseOrFn) {
-	return mock.method(globalThis, "fetch", async (url, init) => {
+export function mockFetch(
+	responseOrFn: Response | ((url: string | URL, init?: RequestInit) => Response | Promise<Response>),
+) {
+	return mock.method(globalThis, "fetch", async (url: string | URL, init?: RequestInit) => {
 		if (typeof responseOrFn === "function") {
 			return responseOrFn(url, init);
 		}
@@ -93,7 +95,7 @@ export function mockFetch(responseOrFn) {
 	});
 }
 
-export function jsonResponse(body, status = 200, statusText = "OK") {
+export function jsonResponse(body: unknown, status = 200, statusText = "OK") {
 	return new Response(JSON.stringify(body), {
 		status,
 		statusText,
@@ -102,23 +104,25 @@ export function jsonResponse(body, status = 200, statusText = "OK") {
 }
 
 export function errorJsonResponse(
-	body = { message: "Unauthorized" },
+	body: unknown = { message: "Unauthorized" },
 	status = 403,
 	statusText = "Forbidden",
 ) {
 	return jsonResponse(body, status, statusText);
 }
 
-/** First fetch call: { url, method, headers, body } */
-export function getCall(fetchMock, index = 0) {
+export function getCall(
+	fetchMock: ReturnType<typeof mockFetch>,
+	index = 0,
+) {
 	const call = fetchMock.mock.calls[index];
 	assert.ok(call, `expected fetch call at index ${index}`);
 	const url = call.arguments[0];
-	const init = call.arguments[1] ?? {};
+	const init = (call.arguments[1] ?? {}) as RequestInit;
 	const headers =
 		init.headers instanceof Headers
 			? init.headers
-			: new Headers(init.headers ?? {});
+			: new Headers(init.headers ?? undefined);
 	return {
 		url: String(url),
 		method: init.method ?? "GET",
@@ -128,17 +132,16 @@ export function getCall(fetchMock, index = 0) {
 	};
 }
 
-export function assertAuthAndJson(headers) {
+export function assertAuthAndJson(headers: Headers) {
 	assert.equal(headers.get("x-api-key"), TEST_API_KEY);
 	assert.equal(headers.get("Content-Type"), "application/json");
 }
 
-export function parseBody(body) {
+export function parseBody(body: unknown) {
 	assert.equal(typeof body, "string");
-	return JSON.parse(body);
+	return JSON.parse(body as string) as unknown;
 }
 
-/** Assert validation rejected before any HTTP call. */
-export function assertNoFetch(fetchMock) {
+export function assertNoFetch(fetchMock: ReturnType<typeof mockFetch>) {
 	assert.equal(fetchMock.mock.calls.length, 0, "expected no HTTP call");
 }

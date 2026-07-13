@@ -30,21 +30,23 @@ src/
   client.ts              # HTTP transport (internal)
   core/                  # Result types, client options
   services/
+    api-key/
+      create.ts          # validate + HTTP
+      create.test.ts     # wire + validation (paired)
+      list.ts + list.test.ts
+      ...
+      api-key.ts + api-key.test.ts
+      test-helpers.ts    # fixtures (tests only)
     mail/
     domain/
-    api-key/             # Wire ops: create,list,get,update,delete,rotate,enable,disable
     contacts/
     webhook/
-tests/
-  init.test.mjs          # strict construction
-  exports.test.mjs       # public package surface
+tests/                   # cross-cutting package tests
+  init.test.mjs
+  exports.test.mjs
   mail.test.mjs
   domain.test.mjs
-  api-key/               # one file per endpoint
-    _helpers.mjs
-    create.test.mjs
-    ...
-dist/                    # Build output (tsup)
+dist/
 ```
 
 ---
@@ -56,20 +58,19 @@ dist/                    # Build output (tsup)
 | Init | `new Reloop({ apiKey, baseUrl? })` — `apiKey` required; no `key` / `url` aliases |
 | HTTP errors | Return `{ response, error }` — do **not** throw for API/network failures |
 | Input validation | Throw `ReloopValidationError` before fetch (no network). Rules match backend (name 1–255, page ≥ 1, limit 1–100, non-empty ids) |
-| Api-key layout | Pair each op: `create.ts` ↔ `tests/api-key/create.test.mjs` (wire + validation). Shared field helpers in `fields.ts`; thin `api-key.ts` facade |
+| Api-key layout | **Colocate** `create.ts` + `create.test.ts`. Validation lives in the op file; tests cover wire + validation. Shared field helpers in `fields.ts`; thin `api-key.ts` facade |
 | Mail & domain requests | **snake_case** JSON (`reply_to`, `click_tracking`) |
 | Contacts & API keys | camelCase in JSON bodies as the API expects |
 | API key methods | 1:1 with backend: create, list, get, update, delete, rotate, enable, disable (no `pause`) |
 | Types | Request/response interfaces in each service’s `types.ts` |
 | Public exports | `Reloop` (+ default), options, Result/error types, api-key **types**, other resource modules as today. Do **not** export constructable `ReloopClient` or `ApiKeyService` |
-| Tests | Mock `fetch`; assert path, method, headers, body, success + error Result |
-| API key tests | One `tests/api-key/<endpoint>.test.mjs` per route; share fixtures in `_helpers.mjs` |
+| Tests | Prefer `foo.ts` + `foo.test.ts` next to source. Mock `fetch`; assert path, method, headers, body, success + error Result |
 | README | Prerequisites, strict init, send example, api-key table, link to docs |
 
-### Example: adding an API key endpoint test
+### Example: paired create test
 
-```javascript
-// tests/api-key/create.test.mjs
+```typescript
+// src/services/api-key/create.test.ts  (next to create.ts)
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
 import {
@@ -80,7 +81,7 @@ import {
   jsonResponse,
   mockFetch,
   parseBody,
-} from "./_helpers.mjs";
+} from "./test-helpers.ts";
 
 afterEach(() => mock.restoreAll());
 
@@ -108,7 +109,7 @@ Run tests: `npm test`
 
 - [ ] `npm test` passes
 - [ ] `npm run build` succeeds
-- [ ] New routes have tests under `tests/`
+- [ ] New routes have colocated `*.test.ts` (or tests under `tests/`)
 - [ ] Types match the OpenAPI spec at [reloop.sh/docs](https://reloop.sh/docs)
 - [ ] No API keys or secrets committed
 - [ ] Public export surface unchanged unless intentional (see Conventions)
