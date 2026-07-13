@@ -9,7 +9,7 @@
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
-		"test": "npm run build && node --test --experimental-strip-types src/**/*.test.ts tests/*.test.mjs"
+		"test": "npm run build && node --test --experimental-strip-types $(find tests -name '*.test.mjs' | sort)"
 	},
 	"keywords": [
 		"reloop",

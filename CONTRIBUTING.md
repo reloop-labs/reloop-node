@@ -34,7 +34,16 @@ src/
     api-key/
     contacts/
     webhook/
-tests/                   # node:test route tests (*.test.mjs)
+tests/
+  init.test.mjs          # client construction
+  mail.test.mjs
+  domain.test.mjs
+  api-key/               # one file per endpoint
+    _helpers.mjs
+    create.test.mjs
+    list.test.mjs
+    get.test.mjs
+    ...
 dist/                    # Build output (tsup)
 ```
 
@@ -49,25 +58,41 @@ dist/                    # Build output (tsup)
 | Contacts & API keys | camelCase in JSON (handled by the client layer) |
 | Types | Add request/response interfaces in each service’s `types.ts` |
 | Exports | Export services and types from `src/index.ts` |
-| Tests | Mock `fetch`; assert URL path, method, and JSON body |
+| Tests | Mock `fetch`; assert path, method, headers, body, success + error Result |
+| API key tests | One `tests/api-key/<endpoint>.test.mjs` per route; share fixtures in `_helpers.mjs` |
 | README | Keep minimal: prerequisites (API key + verified domain), send example, link to docs |
 
-### Example: adding a route test
+### Example: adding an API key endpoint test
 
 ```javascript
+// tests/api-key/create.test.mjs
 import assert from "node:assert/strict";
-import { mock, test } from "node:test";
-import { Reloop } from "../dist/index.js";
+import { afterEach, mock, test } from "node:test";
+import {
+  apiKeyWithKeyFixture,
+  assertAuthAndJson,
+  createClient,
+  getCall,
+  jsonResponse,
+  mockFetch,
+  parseBody,
+} from "./_helpers.mjs";
 
-test("send posts to /api/mail/v1/send", async () => {
-  const fetchMock = mock.method(globalThis, "fetch", async () =>
-    Response.json({ success: true, messageId: "msg_1", status: "sent", timestamp: "...", id: "log_1" }),
-  );
+afterEach(() => mock.restoreAll());
 
-  const reloop = new Reloop({ apiKey: "rl_test", baseUrl: "https://reloop.sh" });
-  await reloop.mail.send({ from: "a@b.com", to: "c@d.com", subject: "Hi" });
+test("create: POST /api/api-key/v1/ with name body", async () => {
+  const payload = apiKeyWithKeyFixture();
+  const fetchMock = mockFetch(jsonResponse(payload, 201));
 
-  assert.equal(fetchMock.mock.calls[0]?.arguments[0], "https://reloop.sh/api/mail/v1/send");
+  const { response, error } = await createClient().apiKey.create({ name: "Production Key" });
+
+  assert.equal(error, null);
+  assert.deepEqual(response, payload);
+  const call = getCall(fetchMock);
+  assert.equal(call.url, "https://reloop.sh/api/api-key/v1/");
+  assert.equal(call.method, "POST");
+  assertAuthAndJson(call.headers);
+  assert.deepEqual(parseBody(call.body), { name: "Production Key" });
 });
 ```
 

@@ -1,0 +1,139 @@
+import assert from "node:assert/strict";
+import { mock } from "node:test";
+import { Reloop } from "../../dist/index.js";
+
+export const BASE_URL = "https://reloop.sh";
+export const TEST_API_KEY = "rl_test";
+export const KEY_ID = "key_123456789";
+
+/** Full ApiKey wire shape (list/get/update/enable/disable). */
+export function apiKeyFixture(overrides = {}) {
+	return {
+		id: KEY_ID,
+		name: "Production Key",
+		start: "rl_live",
+		prefix: "rl",
+		refillInterval: null,
+		refillAmount: null,
+		lastRefillAt: null,
+		enabled: true,
+		rateLimitEnabled: false,
+		rateLimitTimeWindow: 0,
+		rateLimitMax: 0,
+		requestCount: 0,
+		remaining: null,
+		lastRequest: null,
+		expiresAt: null,
+		createdAt: "2026-01-01T00:00:00.000Z",
+		updatedAt: "2026-01-01T00:00:00.000Z",
+		permissions: null,
+		metadata: null,
+		object: "api_key",
+		event: "evt_1",
+		...overrides,
+	};
+}
+
+/** Create/rotate response that includes the secret once. */
+export function apiKeyWithKeyFixture(overrides = {}) {
+	return {
+		id: KEY_ID,
+		name: "Production Key",
+		key: "rl_live_abc123def456",
+		enabled: true,
+		createdAt: "2026-01-01T00:00:00.000Z",
+		updatedAt: "2026-01-01T00:00:00.000Z",
+		permissions: null,
+		object: "api_key",
+		event: "evt_1",
+		...overrides,
+	};
+}
+
+export function listResponseFixture(overrides = {}) {
+	return {
+		object: "api_key",
+		apiKeys: [apiKeyFixture()],
+		total: 1,
+		page: 1,
+		limit: 10,
+		event: "evt_list",
+		...overrides,
+	};
+}
+
+export function deleteResponseFixture(overrides = {}) {
+	return {
+		id: KEY_ID,
+		message: "API key deleted",
+		object: "api_key",
+		event: "evt_delete",
+		...overrides,
+	};
+}
+
+export function createClient(options = {}) {
+	return new Reloop({
+		apiKey: TEST_API_KEY,
+		baseUrl: BASE_URL,
+		...options,
+	});
+}
+
+/**
+ * Mock global fetch. Pass a Response, or a function (url, init) => Response.
+ * @returns {ReturnType<typeof mock.method>}
+ */
+export function mockFetch(responseOrFn) {
+	return mock.method(globalThis, "fetch", async (url, init) => {
+		if (typeof responseOrFn === "function") {
+			return responseOrFn(url, init);
+		}
+		return responseOrFn;
+	});
+}
+
+export function jsonResponse(body, status = 200, statusText = "OK") {
+	return new Response(JSON.stringify(body), {
+		status,
+		statusText,
+		headers: { "Content-Type": "application/json" },
+	});
+}
+
+export function errorJsonResponse(
+	body = { message: "Unauthorized" },
+	status = 403,
+	statusText = "Forbidden",
+) {
+	return jsonResponse(body, status, statusText);
+}
+
+/** First fetch call: { url, method, headers, body } */
+export function getCall(fetchMock, index = 0) {
+	const call = fetchMock.mock.calls[index];
+	assert.ok(call, `expected fetch call at index ${index}`);
+	const url = call.arguments[0];
+	const init = call.arguments[1] ?? {};
+	const headers =
+		init.headers instanceof Headers
+			? init.headers
+			: new Headers(init.headers ?? {});
+	return {
+		url: String(url),
+		method: init.method ?? "GET",
+		headers,
+		body: init.body,
+		init,
+	};
+}
+
+export function assertAuthAndJson(headers) {
+	assert.equal(headers.get("x-api-key"), TEST_API_KEY);
+	assert.equal(headers.get("Content-Type"), "application/json");
+}
+
+export function parseBody(body) {
+	assert.equal(typeof body, "string");
+	return JSON.parse(body);
+}
