@@ -54,9 +54,64 @@ export { ReloopValidationError } from "@/services/api-key/errors";
 export * from "@/services/mail/mail";
 export * from "@/services/mail/types";
 export * from "@/services/contacts/contacts";
-export * from "@/services/contacts/channels";
-export * from "@/services/contacts/groups";
 export * from "@/services/contacts/types";
+export type {
+	ContactProperty,
+	ContactPropertyListItem,
+	ContactPropertyResponse,
+	CreatePropertyParams,
+	DeletePropertyResponse,
+	ListPropertiesParams,
+	PropertyListResponse,
+	PropertyType,
+	UpdatePropertyParams,
+} from "@/services/contacts/property/types";
+export type {
+	PropertyListResult,
+	PropertyResult,
+} from "@/services/contacts/property/result";
+export type {
+	AddContactToGroupParams,
+	AddContactToGroupResponse,
+	ContactGroup,
+	ContactGroupListItem,
+	ContactGroupResponse,
+	CreateGroupParams,
+	DeleteGroupResponse,
+	GroupContactItem,
+	GroupContactListResponse,
+	GroupListResponse,
+	ListGroupContactsParams,
+	ListGroupsParams,
+	RemoveContactFromGroupParams,
+	RemoveContactFromGroupResponse,
+	UpdateGroupParams,
+} from "@/services/contacts/group/types";
+export type {
+	GroupContactsResult,
+	GroupListResult,
+	GroupResult,
+} from "@/services/contacts/group/result";
+export type {
+	AddContactToChannelParams,
+	AddContactToChannelResponse,
+	ChannelListResponse,
+	ChannelSubscription,
+	ChannelVisibility,
+	ContactChannel,
+	ContactChannelListItem,
+	ContactChannelResponse,
+	CreateChannelParams,
+	DeleteChannelResponse,
+	ListChannelsParams,
+	UpdateChannelParams,
+	UpdateContactChannelParams,
+	UpdateContactChannelResponse,
+} from "@/services/contacts/channel/types";
+export type {
+	ChannelListResult,
+	ChannelResult,
+} from "@/services/contacts/channel/result";
 export * from "@/services/domain/domain";
 export * from "@/services/domain/types";
 export * from "@/services/webhook/webhook";

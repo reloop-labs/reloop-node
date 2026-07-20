@@ -73,6 +73,78 @@ if (apiKeyError) throw apiKeyError;
 console.log(apiKey.id, apiKey.key);
 ```
 
+## Contact properties
+
+Manage custom properties with `reloop.contacts.properties`:
+
+| Method | Purpose |
+|--------|---------|
+| `create({ name, type, fallbackValue? })` | Create a property |
+| `list(params?)` | List / filter properties |
+| `update(id, { fallbackValue })` | Update fallback value |
+| `delete(id)` | Delete a property |
+
+```typescript
+const { property, propertyError } = await reloop.contacts.properties.create({
+  name: "company_name",
+  type: "string",
+  fallbackValue: "Unknown",
+});
+if (propertyError) throw propertyError;
+
+console.log(property.id, property.propertyName);
+```
+
+## Groups
+
+Manage groups with `reloop.contacts.groups`:
+
+| Method | Purpose |
+|--------|---------|
+| `create({ name })` | Create a group |
+| `list(params?)` | List / search groups |
+| `get(id)` | Get one group |
+| `update(id, { name })` | Rename |
+| `delete(id)` | Delete a group |
+| `listContacts(id, params?)` | List contacts in a group |
+| `addContact(id, { contact_id? \| email? })` | Add a contact |
+| `removeContact(id, { contact_id? \| email? })` | Remove a contact |
+
+```typescript
+const { group, groupError } = await reloop.contacts.groups.create({
+  name: "Beta Testers",
+});
+if (groupError) throw groupError;
+
+console.log(group.id, group.name);
+```
+
+## Channels
+
+Manage channels with `reloop.contacts.channels`:
+
+| Method | Purpose |
+|--------|---------|
+| `create({ name, description?, defaultSubscription?, visibility? })` | Create a channel |
+| `list(params?)` | List channels |
+| `get(id)` | Get one channel |
+| `update(id, params)` | Update name / description / visibility |
+| `delete(id)` | Delete a channel |
+| `addContact(id, { contact_id? \| email?, subscription? })` | Enroll a contact |
+| `updateSubscription(id, { contact_id? \| email?, subscription })` | Update enrollment |
+
+```typescript
+const { channel, channelError } = await reloop.contacts.channels.create({
+  name: "Product Updates",
+  description: "Get the latest news about our products",
+  defaultSubscription: "opt_in",
+  visibility: "public",
+});
+if (channelError) throw channelError;
+
+console.log(channel.id, channel.name);
+```
+
 More examples: [reloop.sh/docs](https://reloop.sh/docs)
 
 ## License
