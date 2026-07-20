@@ -49,16 +49,47 @@ src/
       mail.test.ts
       paths.ts
       result.ts
+      errors.ts
+      fields.ts
       test-helpers.ts
       types.ts
-    domain/
     contacts/
+      create/ … delete/
+      contacts.ts
+      contacts.test.ts
+      paths.ts
+      result.ts
+      errors.ts
+      fields.ts
+      test-helpers.ts
+      types.ts
+      property/
+      group/
+      channel/
+    domain/
+      create/ … verify/
+      domain.ts
+      domain.test.ts
+      paths.ts
+      result.ts
+      errors.ts
+      fields.ts
+      test-helpers.ts
+      types.ts
     webhook/
+      create/ … retry-delivery/
+      verify/
+      webhook.ts
+      webhook.test.ts
+      paths.ts
+      result.ts
+      errors.ts
+      fields.ts
+      test-helpers.ts
+      types.ts
 tests/                   # cross-cutting package tests
   init.test.mjs
   exports.test.mjs
-  webhook.test.mjs
-  webhook-verify.test.mjs
 dist/
 ```
 
@@ -71,6 +102,8 @@ dist/
 | Init | `new Reloop({ apiKey, baseUrl? })` — `apiKey` required; no `key` / `url` aliases |
 | HTTP errors (transport) | Internal `ReloopResult` is `{ response, error }` |
 | Mail results | Named fields: `{ response, emailError }` |
+| Contact results | Named fields: `{ contact, contactError }` (list: `{ contacts, contactError }`) |
+| Webhook results | Named fields: `{ webhook, webhookError }` (list: `{ webhooks, webhookError }`, deliveries: `{ deliveries, webhookError }`) |
 | API key results | Named fields: `{ apiKey, apiKeyError }` (list: `{ apiKeys, apiKeyError }`) |
 | Input validation | Throw `ReloopValidationError` before fetch (no network). Rules match backend (name 1–255, page ≥ 1, limit 1–100, non-empty ids) |
 | Api-key layout | One folder per op: `create/create.ts` + `create/create.test.ts`. Validation in the op file; tests cover wire + validation. Shared `fields.ts` / `paths.ts`; thin `api-key.ts` facade |
@@ -125,8 +158,9 @@ Run tests: `bun test`
 ## Webhooks
 
 - **API:** `reloop.webhook` — create, list, get, update, delete, pause/enable/disable, trigger, listDeliveries, retryDelivery
+- **Results:** `{ webhook, webhookError }` (and list/delivery variants)
 - **Verify (local):** `WebhookService.constructEvent(rawBody, signatureHeader, secret)` or `reloop.webhook.verify({ payload, headers, secret })` — HMAC-SHA256 via `X-Webhook-Signature` (`t=...,v1=...`)
-- **Tests:** `tests/webhook.test.mjs` (routes), `tests/webhook-verify.test.mjs` (signature)
+- **Tests:** co-located under `src/services/webhook/*/`.test.ts and `verify/verify.test.ts`
 - **Retry route:** `POST /api/webhook/deliveries/:id/retry` (not under `/v1`)
 
 ---

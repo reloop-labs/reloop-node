@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { afterEach, mock, test } from "bun:test";
 import {
 	assertAuthAndJson,
+	assertNoFetch,
 	createClient,
 	errorJsonResponse,
 	getCall,
@@ -10,6 +11,7 @@ import {
 	parseBody,
 	sendMailResponseFixture,
 } from "@/services/mail/test-helpers";
+import { ReloopValidationError } from "@/index";
 
 afterEach(() => {
 	mock.restore();
@@ -87,4 +89,27 @@ test("send: returns emailError on non-OK without throwing", async () => {
 	assert.ok(emailError);
 	assert.equal(emailError.status, 400);
 	assert.equal(emailError.body.message, "Invalid from address");
+});
+
+test("send: empty from throws before fetch", async () => {
+	const fetchMock = mockFetch(jsonResponse(sendMailResponseFixture()));
+	await assert.rejects(
+		() =>
+			createClient().mail.send({
+				from: "",
+				to: "user@example.com",
+				subject: "Hello",
+			}),
+		ReloopValidationError,
+	);
+	assertNoFetch(fetchMock);
+});
+
+test("send: missing params throws before fetch", async () => {
+	const fetchMock = mockFetch(jsonResponse(sendMailResponseFixture()));
+	await assert.rejects(
+		() => createClient().mail.send(undefined as never),
+		ReloopValidationError,
+	);
+	assertNoFetch(fetchMock);
 });

@@ -1,27 +1,24 @@
 import type { ReloopClient } from "@/client";
-import type { ReloopResult } from "@/core/result";
-import { ChannelService } from "@/services/contacts/channel/channel";
-import { GroupService } from "@/services/contacts/group/group";
-import { PropertyService } from "@/services/contacts/property/property";
+import { createContact } from "@/services/contacts/create/create";
+import { deleteContact } from "@/services/contacts/delete/delete";
+import { getContact } from "@/services/contacts/get/get";
+import { listContacts } from "@/services/contacts/list/list";
+import type {
+	ContactListResult,
+	ContactResult,
+} from "@/services/contacts/result";
 import type {
 	Contact,
-	ContactListResponse,
 	ContactResponse,
 	CreateContactParams,
 	DeleteContactResponse,
 	ListContactsParams,
 	UpdateContactParams,
 } from "@/services/contacts/types";
-
-function appendContactQuery(
-	searchParams: URLSearchParams,
-	params?: ListContactsParams,
-): void {
-	if (params?.page !== undefined) searchParams.set("page", params.page.toString());
-	if (params?.limit !== undefined) searchParams.set("limit", params.limit.toString());
-	if (params?.search) searchParams.set("search", params.search);
-	if (params?.status) searchParams.set("status", params.status);
-}
+import { updateContact } from "@/services/contacts/update/update";
+import { ChannelService } from "@/services/contacts/channel/channel";
+import { GroupService } from "@/services/contacts/group/group";
+import { PropertyService } from "@/services/contacts/property/property";
 
 export class ContactsService {
 	public readonly properties: PropertyService;
@@ -34,45 +31,28 @@ export class ContactsService {
 		this.channels = new ChannelService(client);
 	}
 
-	async create(params: CreateContactParams): Promise<ReloopResult<ContactResponse>> {
-		return this.client.fetch<ContactResponse>("/api/contacts/create", {
-			method: "POST",
-			body: JSON.stringify(params),
-		});
+	async create(
+		params: CreateContactParams,
+	): Promise<ContactResult<ContactResponse>> {
+		return createContact(this.client, params);
 	}
 
-	async get(contactId: string): Promise<ReloopResult<Contact>> {
-		return this.client.fetch<Contact>(
-			`/api/contacts/retrieve/${contactId}`,
-			{ method: "GET" },
-		);
+	async get(id: string): Promise<ContactResult<Contact>> {
+		return getContact(this.client, id);
 	}
 
-	async list(
-		params?: ListContactsParams,
-	): Promise<ReloopResult<ContactListResponse>> {
-		const searchParams = new URLSearchParams();
-		appendContactQuery(searchParams, params);
-		const queryString = searchParams.toString();
-		const path = `/api/contacts/list${queryString ? `?${queryString}` : ""}`;
-
-		return this.client.fetch<ContactListResponse>(path, { method: "GET" });
+	async list(params?: ListContactsParams): Promise<ContactListResult> {
+		return listContacts(this.client, params);
 	}
 
 	async update(
-		contactId: string,
+		id: string,
 		params: UpdateContactParams,
-	): Promise<ReloopResult<ContactResponse>> {
-		return this.client.fetch<ContactResponse>(`/api/contacts/${contactId}`, {
-			method: "PATCH",
-			body: JSON.stringify(params),
-		});
+	): Promise<ContactResult<ContactResponse>> {
+		return updateContact(this.client, id, params);
 	}
 
-	async delete(contactId: string): Promise<ReloopResult<DeleteContactResponse>> {
-		return this.client.fetch<DeleteContactResponse>(
-			`/api/contacts/${contactId}`,
-			{ method: "DELETE" },
-		);
+	async delete(id: string): Promise<ContactResult<DeleteContactResponse>> {
+		return deleteContact(this.client, id);
 	}
 }

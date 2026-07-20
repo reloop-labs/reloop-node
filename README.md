@@ -73,6 +73,30 @@ if (apiKeyError) throw apiKeyError;
 console.log(apiKey.id, apiKey.key);
 ```
 
+## Contacts
+
+Manage contacts with `reloop.contacts`:
+
+| Method | Purpose |
+|--------|---------|
+| `create(params)` | Create a contact |
+| `list(params?)` | List / search contacts |
+| `get(id)` | Retrieve one contact |
+| `update(id, params)` | Update a contact |
+| `delete(id)` | Delete a contact |
+
+```typescript
+const { contact, contactError } = await reloop.contacts.create({
+  email: "john.doe@example.com",
+  firstName: "John",
+  lastName: "Doe",
+  status: "subscribed",
+});
+if (contactError) throw contactError;
+
+console.log(contact.id, contact.email);
+```
+
 ## Contact properties
 
 Manage custom properties with `reloop.contacts.properties`:
@@ -195,12 +219,12 @@ import { Reloop, WebhookService } from "reloop-email";
 
 const reloop = new Reloop({ apiKey: "rl_your_api_key_here" });
 
-const { response, error } = await reloop.webhook.create({
+const { webhook, webhookError } = await reloop.webhook.create({
   description: "Production webhook",
   url: "https://example.com/webhooks/reloop",
   events: ["domain.created"],
 });
-if (error) throw error;
+if (webhookError) throw webhookError;
 
 // In your HTTP handler (Express, etc.):
 const event = WebhookService.constructEvent(

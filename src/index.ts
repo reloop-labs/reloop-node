@@ -52,11 +52,14 @@ export type {
 export { ReloopValidationError } from "@/services/api-key/errors";
 
 export type { EmailResult } from "@/services/mail/result";
-export { toEmailResult } from "@/services/mail/result";
 export * from "@/services/mail/mail";
 export * from "@/services/mail/types";
 export * from "@/services/contacts/contacts";
 export * from "@/services/contacts/types";
+export type {
+	ContactListResult,
+	ContactResult,
+} from "@/services/contacts/result";
 export type {
 	ContactProperty,
 	ContactPropertyListItem,
@@ -122,4 +125,13 @@ export type {
 } from "@/services/domain/result";
 export * from "@/services/webhook/webhook";
 export * from "@/services/webhook/types";
-export * from "@/services/webhook/verify";
+export type {
+	WebhookDeliveryListResult,
+	WebhookListResult,
+	WebhookResult,
+} from "@/services/webhook/result";
+export {
+	verifyWebhook,
+	WEBHOOK_SIGNATURE_HEADER,
+	WEBHOOK_TIMESTAMP_HEADER,
+} from "@/services/webhook/verify/verify";

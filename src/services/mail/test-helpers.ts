@@ -85,3 +85,7 @@ export function assertAuthAndJson(headers: HeadersInit | undefined): void {
 	assert.equal(h.get("x-api-key"), TEST_API_KEY);
 	assert.equal(h.get("content-type"), "application/json");
 }
+
+export function assertNoFetch(fetchMock: FetchMock) {
+	assert.equal(fetchMock.mock.calls.length, 0, "expected no HTTP call");
+}

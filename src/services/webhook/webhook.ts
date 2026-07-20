@@ -1,5 +1,16 @@
 import type { ReloopClient } from "@/client";
-import type { ReloopResult } from "@/core/result";
+import { createWebhook } from "@/services/webhook/create/create";
+import { deleteWebhook } from "@/services/webhook/delete/delete";
+import { getWebhook } from "@/services/webhook/get/get";
+import { listWebhookDeliveries } from "@/services/webhook/list-deliveries/list-deliveries";
+import { listWebhooks } from "@/services/webhook/list/list";
+import type {
+	WebhookDeliveryListResult,
+	WebhookListResult,
+	WebhookResult,
+} from "@/services/webhook/result";
+import { retryWebhookDelivery } from "@/services/webhook/retry-delivery/retry-delivery";
+import { triggerWebhook } from "@/services/webhook/trigger/trigger";
 import type {
 	CreateWebhookParams,
 	DeleteWebhookResponse,
@@ -11,14 +22,13 @@ import type {
 	UpdateWebhookParams,
 	VerifyWebhookParams,
 	Webhook,
-	WebhookDeliveryListResponse,
 	WebhookEvent,
-	WebhookListResponse,
 } from "@/services/webhook/types";
+import { updateWebhook } from "@/services/webhook/update/update";
 import {
 	verifyWebhook,
 	WEBHOOK_SIGNATURE_HEADER,
-} from "@/services/webhook/verify";
+} from "@/services/webhook/verify/verify";
 
 export class WebhookService {
 	constructor(private readonly client: ReloopClient) {}
@@ -45,89 +55,59 @@ export class WebhookService {
 		return WebhookService.verify(params);
 	}
 
-	async create(params: CreateWebhookParams): Promise<ReloopResult<Webhook>> {
-		return this.client.fetch<Webhook>("/api/webhook/v1/", {
-			method: "POST",
-			body: JSON.stringify(params),
-		});
+	async create(params: CreateWebhookParams): Promise<WebhookResult<Webhook>> {
+		return createWebhook(this.client, params);
 	}
 
-	async list(params?: ListWebhooksParams): Promise<ReloopResult<WebhookListResponse>> {
-		const searchParams = new URLSearchParams();
-		if (params?.page !== undefined) searchParams.set("page", params.page.toString());
-		if (params?.limit !== undefined) searchParams.set("limit", params.limit.toString());
-		if (params?.status) searchParams.set("status", params.status);
-		if (params?.organizationId) searchParams.set("organizationId", params.organizationId);
-		if (params?.userId) searchParams.set("userId", params.userId);
-
-		const queryString = searchParams.toString();
-		const path = queryString ? `/api/webhook/v1?${queryString}` : "/api/webhook/v1";
-
-		return this.client.fetch<WebhookListResponse>(path, { method: "GET" });
+	async list(params?: ListWebhooksParams): Promise<WebhookListResult> {
+		return listWebhooks(this.client, params);
 	}
 
-	async get(webhookId: string): Promise<ReloopResult<Webhook>> {
-		return this.client.fetch<Webhook>(`/api/webhook/v1/${webhookId}`, {
-			method: "GET",
-		});
+	async get(webhookId: string): Promise<WebhookResult<Webhook>> {
+		return getWebhook(this.client, webhookId);
 	}
 
-	async update(webhookId: string, params: UpdateWebhookParams): Promise<ReloopResult<Webhook>> {
-		return this.client.fetch<Webhook>(`/api/webhook/v1/${webhookId}`, {
-			method: "PATCH",
-			body: JSON.stringify(params),
-		});
+	async update(
+		webhookId: string,
+		params: UpdateWebhookParams,
+	): Promise<WebhookResult<Webhook>> {
+		return updateWebhook(this.client, webhookId, params);
 	}
 
-	async delete(webhookId: string): Promise<ReloopResult<DeleteWebhookResponse>> {
-		return this.client.fetch<DeleteWebhookResponse>(
-			`/api/webhook/v1/${webhookId}`,
-			{ method: "DELETE" },
-		);
+	async delete(
+		webhookId: string,
+	): Promise<WebhookResult<DeleteWebhookResponse>> {
+		return deleteWebhook(this.client, webhookId);
 	}
 
-	async pause(webhookId: string): Promise<ReloopResult<Webhook>> {
-		return this.update(webhookId, { status: "paused" });
+	async pause(webhookId: string): Promise<WebhookResult<Webhook>> {
+		return updateWebhook(this.client, webhookId, { status: "paused" });
 	}
 
-	async enable(webhookId: string): Promise<ReloopResult<Webhook>> {
-		return this.update(webhookId, { status: "active" });
+	async enable(webhookId: string): Promise<WebhookResult<Webhook>> {
+		return updateWebhook(this.client, webhookId, { status: "active" });
 	}
 
-	async disable(webhookId: string): Promise<ReloopResult<Webhook>> {
-		return this.update(webhookId, { status: "disabled" });
+	async disable(webhookId: string): Promise<WebhookResult<Webhook>> {
+		return updateWebhook(this.client, webhookId, { status: "disabled" });
 	}
 
-	async trigger(params: TriggerWebhookParams): Promise<ReloopResult<TriggerWebhookResponse>> {
-		return this.client.fetch<TriggerWebhookResponse>("/api/webhook/v1/trigger", {
-			method: "POST",
-			body: JSON.stringify(params),
-		});
+	async trigger(
+		params: TriggerWebhookParams,
+	): Promise<WebhookResult<TriggerWebhookResponse>> {
+		return triggerWebhook(this.client, params);
 	}
 
 	async listDeliveries(
 		webhookId: string,
 		params?: ListWebhookDeliveriesParams,
-	): Promise<ReloopResult<WebhookDeliveryListResponse>> {
-		const searchParams = new URLSearchParams();
-		if (params?.page !== undefined) searchParams.set("page", params.page.toString());
-		if (params?.limit !== undefined) searchParams.set("limit", params.limit.toString());
-		if (params?.status !== undefined) searchParams.set("status", params.status);
-
-		const queryString = searchParams.toString();
-		const path = `/api/webhook/v1/${webhookId}/deliveries${
-			queryString ? `?${queryString}` : ""
-		}`;
-
-		return this.client.fetch<WebhookDeliveryListResponse>(path, {
-			method: "GET",
-		});
+	): Promise<WebhookDeliveryListResult> {
+		return listWebhookDeliveries(this.client, webhookId, params);
 	}
 
-	async retryDelivery(deliveryId: string): Promise<ReloopResult<RetryWebhookDeliveryResponse>> {
-		return this.client.fetch<RetryWebhookDeliveryResponse>(
-			`/api/webhook/deliveries/${deliveryId}/retry`,
-			{ method: "POST" },
-		);
+	async retryDelivery(
+		deliveryId: string,
+	): Promise<WebhookResult<RetryWebhookDeliveryResponse>> {
+		return retryWebhookDelivery(this.client, deliveryId);
 	}
 }
