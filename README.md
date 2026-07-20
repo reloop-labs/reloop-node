@@ -145,6 +145,71 @@ if (channelError) throw channelError;
 console.log(channel.id, channel.name);
 ```
 
+## Domains
+
+Manage sending domains with `reloop.domain`:
+
+| Method | Purpose |
+|--------|---------|
+| `create({ domain, ... })` | Add a domain |
+| `list(params?)` | List / search domains |
+| `get(id)` | Get one domain |
+| `update(id, params)` | Update tracking / TLS / send settings |
+| `delete(id)` | Delete a domain |
+| `verify(id)` | Start DNS verification |
+
+```typescript
+const { domain, domainError } = await reloop.domain.create({
+  domain: "send.example.com",
+  click_tracking: true,
+  open_tracking: true,
+  tls: "opportunistic",
+  sending_email: true,
+  receiving_email: false,
+});
+if (domainError) throw domainError;
+
+console.log(domain.id, domain.domain);
+```
+
+More examples: [reloop.sh/docs](https://reloop.sh/docs)
+
+## Webhooks
+
+Manage outbound webhooks with `reloop.webhook` and verify incoming events locally (no HTTP call):
+
+| Method | Purpose |
+|--------|---------|
+| `create({ description, url, events })` | Register a webhook |
+| `list(params?)` | List webhooks |
+| `get(id)` | Get one webhook |
+| `update(id, params)` | Update settings / status |
+| `delete(id)` | Delete a webhook |
+| `pause(id)` / `enable(id)` / `disable(id)` | Status shortcuts |
+| `trigger({ event, payload })` | Fire an event manually |
+| `listDeliveries(id, params?)` | List delivery attempts |
+| `retryDelivery(deliveryId)` | Retry a failed delivery |
+
+```typescript
+import { Reloop, WebhookService } from "reloop-email";
+
+const reloop = new Reloop({ apiKey: "rl_your_api_key_here" });
+
+const { response, error } = await reloop.webhook.create({
+  description: "Production webhook",
+  url: "https://example.com/webhooks/reloop",
+  events: ["domain.created"],
+});
+if (error) throw error;
+
+// In your HTTP handler (Express, etc.):
+const event = WebhookService.constructEvent(
+  rawBody,
+  req.headers["x-webhook-signature"],
+  webhookSecret,
+);
+```
+
 More examples: [reloop.sh/docs](https://reloop.sh/docs)
 
 ## License

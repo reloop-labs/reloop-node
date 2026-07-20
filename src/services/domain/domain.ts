@@ -1,85 +1,49 @@
 import type { ReloopClient } from "@/client";
-import type { ReloopResult } from "@/core/result";
+import { createDomain } from "@/services/domain/create/create";
+import { deleteDomain } from "@/services/domain/delete/delete";
+import { getDomain } from "@/services/domain/get/get";
+import { listDomains } from "@/services/domain/list/list";
+import type {
+	DomainListResult,
+	DomainResult,
+} from "@/services/domain/result";
 import type {
 	CreateDomainParams,
 	Domain,
-	DomainListResponse,
-	DomainNameserversResponse,
 	DomainStatusResponse,
-	ForwardDnsParams,
-	ForwardDnsResponse,
 	ListDomainsParams,
 	UpdateDomainParams,
 } from "@/services/domain/types";
+import { updateDomain } from "@/services/domain/update/update";
+import { verifyDomain } from "@/services/domain/verify/verify";
 
 export class DomainService {
 	constructor(private readonly client: ReloopClient) {}
 
-	async create(params: CreateDomainParams): Promise<ReloopResult<Domain>> {
-		return this.client.fetch<Domain>("/api/domain/v1/create", {
-			method: "POST",
-			body: JSON.stringify(params),
-		});
+	async create(params: CreateDomainParams): Promise<DomainResult<Domain>> {
+		return createDomain(this.client, params);
 	}
 
-	async list(params?: ListDomainsParams): Promise<ReloopResult<DomainListResponse>> {
-		const searchParams = new URLSearchParams();
-		if (params?.page !== undefined) searchParams.set("page", params.page.toString());
-		if (params?.limit !== undefined) searchParams.set("limit", params.limit.toString());
-		if (params?.q) searchParams.set("q", params.q);
-		if (params?.status) searchParams.set("status", params.status);
-
-		const queryString = searchParams.toString();
-		const path = `/api/domain/v1/list${queryString ? `?${queryString}` : ""}`;
-
-		return this.client.fetch<DomainListResponse>(path, { method: "GET" });
+	async list(params?: ListDomainsParams): Promise<DomainListResult> {
+		return listDomains(this.client, params);
 	}
 
-	async get(domainId: string): Promise<ReloopResult<Domain>> {
-		return this.client.fetch<Domain>(`/api/domain/v1/${domainId}`, {
-			method: "GET",
-		});
+	async get(id: string): Promise<DomainResult<Domain>> {
+		return getDomain(this.client, id);
 	}
 
-	async getNameservers(
-		domainId: string,
-	): Promise<ReloopResult<DomainNameserversResponse>> {
-		return this.client.fetch<DomainNameserversResponse>(
-			`/api/domain/v1/nameservers/${domainId}`,
-			{ method: "GET" },
-		);
+	async update(
+		id: string,
+		params: UpdateDomainParams,
+	): Promise<DomainResult<Domain>> {
+		return updateDomain(this.client, id, params);
 	}
 
-	async update(domainId: string, params: UpdateDomainParams): Promise<ReloopResult<Domain>> {
-		return this.client.fetch<Domain>(`/api/domain/v1/${domainId}`, {
-			method: "PATCH",
-			body: JSON.stringify(params),
-		});
+	async delete(id: string): Promise<DomainResult<Domain>> {
+		return deleteDomain(this.client, id);
 	}
 
-	async delete(domainId: string): Promise<ReloopResult<Domain>> {
-		return this.client.fetch<Domain>(`/api/domain/v1/${domainId}`, {
-			method: "DELETE",
-		});
-	}
-
-	async verify(domainId: string): Promise<ReloopResult<DomainStatusResponse>> {
-		return this.client.fetch<DomainStatusResponse>(
-			`/api/domain/v1/verify/${domainId}`,
-			{ method: "POST" },
-		);
-	}
-
-	async forwardDns(
-		domainId: string,
-		params: ForwardDnsParams,
-	): Promise<ReloopResult<ForwardDnsResponse>> {
-		return this.client.fetch<ForwardDnsResponse>(
-			`/api/domain/v1/verify/${domainId}/forward-dns`,
-			{
-				method: "POST",
-				body: JSON.stringify(params),
-			},
-		);
+	async verify(id: string): Promise<DomainResult<DomainStatusResponse>> {
+		return verifyDomain(this.client, id);
 	}
 }

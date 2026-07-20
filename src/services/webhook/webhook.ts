@@ -61,7 +61,7 @@ export class WebhookService {
 		if (params?.userId) searchParams.set("userId", params.userId);
 
 		const queryString = searchParams.toString();
-		const path = `/api/webhook/v1/${queryString ? `?${queryString}` : ""}`;
+		const path = queryString ? `/api/webhook/v1?${queryString}` : "/api/webhook/v1";
 
 		return this.client.fetch<WebhookListResponse>(path, { method: "GET" });
 	}

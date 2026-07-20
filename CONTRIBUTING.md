@@ -49,7 +49,8 @@ tests/                   # cross-cutting package tests
   init.test.mjs
   exports.test.mjs
   mail.test.mjs
-  domain.test.mjs
+  webhook.test.mjs
+  webhook-verify.test.mjs
 dist/
 ```
 
@@ -108,7 +109,16 @@ test("create: POST /api/api-key/v1/ with name body", async () => {
 });
 ```
 
-Run tests: `npm test`
+Run tests: `bun test`
+
+---
+
+## Webhooks
+
+- **API:** `reloop.webhook` — create, list, get, update, delete, pause/enable/disable, trigger, listDeliveries, retryDelivery
+- **Verify (local):** `WebhookService.constructEvent(rawBody, signatureHeader, secret)` or `reloop.webhook.verify({ payload, headers, secret })` — HMAC-SHA256 via `X-Webhook-Signature` (`t=...,v1=...`)
+- **Tests:** `tests/webhook.test.mjs` (routes), `tests/webhook-verify.test.mjs` (signature)
+- **Retry route:** `POST /api/webhook/deliveries/:id/retry` (not under `/v1`)
 
 ---
 

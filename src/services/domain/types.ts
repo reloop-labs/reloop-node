@@ -62,8 +62,6 @@ export interface Domain {
 
 export interface CreateDomainParams {
 	domain: string;
-	custom_return_path?: string;
-	tracking?: string;
 	click_tracking?: boolean;
 	open_tracking?: boolean;
 	tls?: DomainTlsMode;
@@ -99,21 +97,4 @@ export interface DomainStatusResponse {
 	id: string;
 	status: DomainStatus;
 	event?: string;
-}
-
-export interface ForwardDnsParams {
-	email: string;
-}
-
-export interface ForwardDnsResponse {
-	success: boolean;
-}
-
-export interface DomainNameserversResponse {
-	object: "domain_nameservers";
-	domainId: string;
-	domain: string;
-	nameservers: string[] | null;
-	dnsProvider: string | null;
-	event: string;
 }

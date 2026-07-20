@@ -114,6 +114,10 @@ export type {
 } from "@/services/contacts/channel/result";
 export * from "@/services/domain/domain";
 export * from "@/services/domain/types";
+export type {
+	DomainListResult,
+	DomainResult,
+} from "@/services/domain/result";
 export * from "@/services/webhook/webhook";
 export * from "@/services/webhook/types";
 export * from "@/services/webhook/verify";
