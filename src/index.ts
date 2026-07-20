@@ -51,6 +51,8 @@ export type {
 } from "@/services/api-key/result";
 export { ReloopValidationError } from "@/services/api-key/errors";
 
+export type { EmailResult } from "@/services/mail/result";
+export { toEmailResult } from "@/services/mail/result";
 export * from "@/services/mail/mail";
 export * from "@/services/mail/types";
 export * from "@/services/contacts/contacts";

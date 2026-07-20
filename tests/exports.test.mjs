@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "bun:test";
+import { mock, test } from "bun:test";
 import * as sdk from "@/index";
 import ReloopDefault, { Reloop } from "@/index";
 
@@ -43,6 +43,34 @@ test("ReloopClient is not part of the public constructable surface", () => {
 test("ApiKeyService is not part of the public constructable surface", () => {
 	assert.equal("ApiKeyService" in sdk, false);
 	assert.equal(sdk.ApiKeyService, undefined);
+});
+
+test("mail.send returns response and emailError fields", async () => {
+	const fetchMock = mock(async () =>
+		Response.json({
+			success: true,
+			messageId: "msg_1",
+			status: "sent",
+			timestamp: "2026-01-01T00:00:00.000Z",
+			id: "log_1",
+		}),
+	);
+	globalThis.fetch = fetchMock;
+
+	const reloop = new Reloop({ apiKey: "rl_test", baseUrl: "https://reloop.sh" });
+	const result = await reloop.mail.send({
+		from: "a@b.com",
+		to: "c@d.com",
+		subject: "Hi",
+	});
+
+	assert.equal("response" in result, true);
+	assert.equal("emailError" in result, true);
+	assert.equal("error" in result, false);
+	assert.equal(result.emailError, null);
+	assert.equal(result.response?.messageId, "msg_1");
+
+	mock.restore();
 });
 
 test("api-key resource is available only via Reloop.apiKey", () => {

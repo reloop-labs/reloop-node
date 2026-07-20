@@ -30,14 +30,14 @@ const reloop = new Reloop({ apiKey: "rl_your_api_key_here" });
 // const reloop = new Reloop({ apiKey: "rl_...", baseUrl: "https://reloop.sh" });
 ```
 
-HTTP helpers return `{ response, error }` — they do not throw for API or network failures.
+HTTP helpers use named result fields — they do not throw for API or network failures. Mail send returns `{ response, emailError }`; API keys use `{ apiKey, apiKeyError }`, and so on.
 
 Invalid arguments (e.g. empty key id or name) throw `ReloopValidationError` **before** any network request.
 
 ## Send email
 
 ```typescript
-const { response, error } = await reloop.mail.send({
+const { response, emailError } = await reloop.mail.send({
   from: "Reloop <hello@your-verified-domain.com>",
   to: "user@example.com",
   subject: "Welcome to Reloop",
@@ -45,7 +45,7 @@ const { response, error } = await reloop.mail.send({
   text: "Thanks for signing up.",
 });
 
-if (error) throw error;
+if (emailError) throw emailError;
 
 console.log(response.messageId, response.id);
 ```

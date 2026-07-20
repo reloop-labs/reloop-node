@@ -42,13 +42,21 @@ src/
       api-key.test.ts
       test-helpers.ts
     mail/
+      send/
+        send.ts
+        send.test.ts
+      mail.ts
+      mail.test.ts
+      paths.ts
+      result.ts
+      test-helpers.ts
+      types.ts
     domain/
     contacts/
     webhook/
 tests/                   # cross-cutting package tests
   init.test.mjs
   exports.test.mjs
-  mail.test.mjs
   webhook.test.mjs
   webhook-verify.test.mjs
 dist/
@@ -61,7 +69,8 @@ dist/
 | Topic | Rule |
 |-------|------|
 | Init | `new Reloop({ apiKey, baseUrl? })` — `apiKey` required; no `key` / `url` aliases |
-| HTTP errors (transport) | `ReloopResult` is `{ response, error }` |
+| HTTP errors (transport) | Internal `ReloopResult` is `{ response, error }` |
+| Mail results | Named fields: `{ response, emailError }` |
 | API key results | Named fields: `{ apiKey, apiKeyError }` (list: `{ apiKeys, apiKeyError }`) |
 | Input validation | Throw `ReloopValidationError` before fetch (no network). Rules match backend (name 1–255, page ≥ 1, limit 1–100, non-empty ids) |
 | Api-key layout | One folder per op: `create/create.ts` + `create/create.test.ts`. Validation in the op file; tests cover wire + validation. Shared `fields.ts` / `paths.ts`; thin `api-key.ts` facade |
