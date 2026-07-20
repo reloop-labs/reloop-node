@@ -90,3 +90,39 @@ test("api-key resource is available only via Reloop.apiKey", () => {
 	}
 	assert.equal(reloop.apiKey.pause, undefined);
 });
+
+test("inbox resources are available via Reloop.inbox", () => {
+	const reloop = new Reloop({ apiKey: "rl_test" });
+	assert.equal(typeof reloop.inbox.mailboxes.list, "function");
+	assert.equal(typeof reloop.inbox.messages.send, "function");
+	assert.equal(typeof reloop.inbox.threads.list, "function");
+});
+
+test("inbox.messages.send returns message and messageError fields", async () => {
+	const fetchMock = mock(async () =>
+		Response.json({
+			success: true,
+			messageId: "msg_1",
+			status: "sent",
+			timestamp: "2026-01-01T00:00:00.000Z",
+			id: "log_1",
+		}),
+	);
+	globalThis.fetch = fetchMock;
+
+	const reloop = new Reloop({ apiKey: "rl_test", baseUrl: "https://reloop.sh" });
+	const result = await reloop.inbox.messages.send({
+		mailboxId: "mbx_1",
+		to: "user@example.com",
+		subject: "Hi",
+		text: "Hello",
+	});
+
+	assert.equal("message" in result, true);
+	assert.equal("messageError" in result, true);
+	assert.equal("error" in result, false);
+	assert.equal(result.messageError, null);
+	assert.equal(result.message?.messageId, "msg_1");
+
+	mock.restore();
+});

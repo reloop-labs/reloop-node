@@ -3,6 +3,7 @@ import type { ReloopClientOptions } from "@/core/types";
 import { ApiKeyService } from "@/services/api-key/api-key";
 import { ContactsService } from "@/services/contacts/contacts";
 import { DomainService } from "@/services/domain/domain";
+import { InboxService } from "@/services/inbox/inbox";
 import { MailService } from "@/services/mail/mail";
 import { WebhookService } from "@/services/webhook/webhook";
 
@@ -12,6 +13,7 @@ export class Reloop {
 	public domain: DomainService;
 	public webhook: WebhookService;
 	public mail: MailService;
+	public inbox: InboxService;
 	private client: ReloopClient;
 
 	constructor(options: ReloopClientOptions) {
@@ -21,6 +23,7 @@ export class Reloop {
 		this.domain = new DomainService(this.client);
 		this.webhook = new WebhookService(this.client);
 		this.mail = new MailService(this.client);
+		this.inbox = new InboxService(this.client);
 	}
 }
 
@@ -135,3 +138,46 @@ export {
 	WEBHOOK_SIGNATURE_HEADER,
 	WEBHOOK_TIMESTAMP_HEADER,
 } from "@/services/webhook/verify/verify";
+export * from "@/services/inbox/inbox";
+export type {
+	InboxSuccessResponse,
+	SendEmailOrPendingResponse,
+	SendEmailResponse,
+	ThreadBatchResponse,
+} from "@/services/inbox/types";
+export type {
+	MailboxListResult,
+	MailboxResult,
+} from "@/services/inbox/mailbox/result";
+export type {
+	CreateMailboxParams,
+	Mailbox,
+	MailboxDetail,
+	UpdateMailboxParams,
+} from "@/services/inbox/mailbox/types";
+export type {
+	MessageListResult,
+	MessageResult,
+} from "@/services/inbox/message/result";
+export type {
+	BatchMessagesParams,
+	ComposeMessageParams,
+	ForwardMessageParams,
+	ListMessagesParams,
+	ListSentMessagesParams,
+	Message,
+	MessageRaw,
+	SendMessageParams,
+	UpdateMessageParams,
+} from "@/services/inbox/message/types";
+export type {
+	ThreadListResult,
+	ThreadResult,
+} from "@/services/inbox/thread/result";
+export type {
+	BatchThreadsParams,
+	ListThreadsParams,
+	Thread,
+	ThreadDetail,
+	UpdateThreadParams,
+} from "@/services/inbox/thread/types";

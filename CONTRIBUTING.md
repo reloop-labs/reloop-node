@@ -87,6 +87,9 @@ src/
       fields.ts
       test-helpers.ts
       types.ts
+    inbox/
+      inbox.ts
+      mailbox/ message/ thread/
 tests/                   # cross-cutting package tests
   init.test.mjs
   exports.test.mjs
@@ -104,11 +107,12 @@ dist/
 | Mail results | Named fields: `{ response, emailError }` |
 | Contact results | Named fields: `{ contact, contactError }` (list: `{ contacts, contactError }`) |
 | Webhook results | Named fields: `{ webhook, webhookError }` (list: `{ webhooks, webhookError }`, deliveries: `{ deliveries, webhookError }`) |
+| Inbox results | Mailboxes: `{ mailbox, mailboxError }` / `{ mailboxes, mailboxError }`. Messages: `{ message, messageError }` / `{ messages, messageError }`. Threads: `{ thread, threadError }` / `{ threads, threadError }` |
 | API key results | Named fields: `{ apiKey, apiKeyError }` (list: `{ apiKeys, apiKeyError }`) |
 | Input validation | Throw `ReloopValidationError` before fetch (no network). Rules match backend (name 1–255, page ≥ 1, limit 1–100, non-empty ids) |
 | Api-key layout | One folder per op: `create/create.ts` + `create/create.test.ts`. Validation in the op file; tests cover wire + validation. Shared `fields.ts` / `paths.ts`; thin `api-key.ts` facade |
 | Mail & domain requests | **snake_case** JSON (`reply_to`, `click_tracking`) |
-| Contacts & API keys | camelCase in JSON bodies as the API expects |
+| Contacts, API keys & inbox | camelCase in JSON bodies as the API expects |
 | API key methods | 1:1 with backend: create, list, get, update, delete, rotate, enable, disable (no `pause`) |
 | Types | Request/response interfaces in each service’s `types.ts` |
 | Public exports | `Reloop` (+ default), options, Result/error types, api-key **types**, other resource modules as today. Do **not** export constructable `ReloopClient` or `ApiKeyService` |

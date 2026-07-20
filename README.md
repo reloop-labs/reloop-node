@@ -234,6 +234,58 @@ const event = WebhookService.constructEvent(
 );
 ```
 
+## Inbox
+
+Manage agent inboxes with `reloop.inbox.mailboxes`, `reloop.inbox.messages`, and `reloop.inbox.threads`:
+
+### Mailboxes
+
+| Method | Purpose |
+|--------|---------|
+| `list()` | List mailboxes |
+| `get(id)` | Get mailbox details |
+| `create(params)` | Create a mailbox |
+| `update(id, params)` | Update mailbox settings |
+| `delete(id)` | Delete a mailbox |
+
+### Messages
+
+| Method | Purpose |
+|--------|---------|
+| `list(params?)` | List inbox messages |
+| `listSent(params?)` | List sent messages |
+| `get(id)` | Get one message |
+| `send(params)` | Send a new message |
+| `reply(id, params)` / `replyAll(id, params)` / `forward(id, params)` | Compose actions |
+| `setRead(id, { isRead })` / `setStar(id, { isStarred })` | Status shortcuts |
+| `delete(id)` | Delete a message |
+
+### Threads
+
+| Method | Purpose |
+|--------|---------|
+| `list(params?)` | List conversation threads |
+| `get(id)` | Get thread with messages |
+| `batch({ ids, action })` | Bulk archive/trash/star/etc. |
+| `archive(id)` / `trash(id)` / `restore(id)` | Folder actions |
+| `setRead(id, { isRead })` / `setStar(id, { isStarred })` | Status shortcuts |
+
+```typescript
+const { mailboxes, mailboxError } = await reloop.inbox.mailboxes.list();
+if (mailboxError) throw mailboxError;
+
+const { message, messageError } = await reloop.inbox.messages.send({
+  mailboxId: mailboxes[0].id,
+  to: "user@example.com",
+  subject: "Hello from Reloop",
+  html: "<p>Hi there</p>",
+});
+if (messageError) throw messageError;
+
+const { threads, threadError } = await reloop.inbox.threads.list({ limit: 50 });
+if (threadError) throw threadError;
+```
+
 More examples: [reloop.sh/docs](https://reloop.sh/docs)
 
 ## License
