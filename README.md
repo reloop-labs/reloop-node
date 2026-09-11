@@ -65,7 +65,7 @@ npm install react react-dom
 npm install @react-email/render
 ```
 
-```tsx
+```typescript
 import { Reloop } from "reloop-email";
 import { WelcomeEmail } from "./emails/welcome";
 
@@ -75,7 +75,7 @@ const { response, emailError } = await reloop.mail.send({
   from: "Reloop <hello@your-verified-domain.com>",
   to: "user@example.com",
   subject: "Welcome to Reloop",
-  react: <WelcomeEmail name="Ada" />,
+  react: WelcomeEmail({ name: "Ada" }),
   text: "Welcome to Reloop",
 });
 ```
