@@ -45,6 +45,9 @@ src/
       send/
         send.ts
         send.test.ts
+      render/
+        render.ts        # react -> html (optional peer dep)
+        render.test.ts
       mail.ts
       mail.test.ts
       paths.ts
@@ -112,6 +115,7 @@ dist/
 | Input validation | Throw `ReloopValidationError` before fetch (no network). Rules match backend (name 1–255, page ≥ 1, limit 1–100, non-empty ids) |
 | Api-key layout | One folder per op: `create/create.ts` + `create/create.test.ts`. Validation in the op file; tests cover wire + validation. Shared `fields.ts` / `paths.ts`; thin `api-key.ts` facade |
 | Mail & domain requests | **snake_case** JSON (`reply_to`, `click_tracking`) |
+| Mail `react` | Rendered locally in `mail/render/render.ts`: optional peer `@react-email/render` first, else `react-dom/server` fallback; `react` is stripped from the wire body and replaces `html` |
 | Contacts, API keys & inbox | camelCase in JSON bodies as the API expects |
 | API key methods | 1:1 with backend: create, list, get, update, delete, rotate, enable, disable (no `pause`) |
 | Types | Request/response interfaces in each service’s `types.ts` |

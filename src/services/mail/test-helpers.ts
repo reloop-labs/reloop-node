@@ -43,7 +43,7 @@ export function mockFetch(
 		}
 		return responseOrFn;
 	}) as FetchMock;
-	globalThis.fetch = fn;
+	globalThis.fetch = fn as unknown as typeof fetch;
 	return fn;
 }
 

@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export interface SendMailParams {
 	from: string;
 	to: string | string[];
@@ -6,6 +8,7 @@ export interface SendMailParams {
 	bcc?: string | string[];
 	text?: string;
 	html?: string;
+	react?: ReactNode;
 	reply_to?: string | string[];
 	scheduled_at?: string;
 	headers?: Record<string, string>;
