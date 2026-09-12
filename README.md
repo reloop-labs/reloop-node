@@ -50,6 +50,38 @@ if (emailError) throw emailError;
 console.log(response.messageId, response.id);
 ```
 
+## Send with a React template
+
+Pass a React element as `react` and it is rendered to HTML on your machine before the request is made (the `react` field itself is never sent). Any plain JSX/TSX component works; you do not need `@react-email/components`.
+
+Rendering needs `react` plus one renderer, tried in this order:
+
+1. `@react-email/render` if installed (email-tuned output)
+2. `react-dom/server` as a fallback (`renderToStaticMarkup` with a doctype prepended)
+
+```bash
+npm install react react-dom
+# optional, for email-specific rendering:
+npm install @react-email/render
+```
+
+```typescript
+import { Reloop } from "reloop-email";
+import { WelcomeEmail } from "./emails/welcome";
+
+const reloop = new Reloop({ apiKey: "rl_your_api_key_here" });
+
+const { response, emailError } = await reloop.mail.send({
+  from: "Reloop <hello@your-verified-domain.com>",
+  to: "user@example.com",
+  subject: "Welcome to Reloop",
+  react: WelcomeEmail({ name: "Ada" }),
+  text: "Welcome to Reloop",
+});
+```
+
+When both `react` and `html` are given, `react` wins. If neither renderer is installed, `send` throws `ReloopValidationError` before any network call.
+
 ## API keys
 
 Manage keys with `reloop.apiKey` (one method per API route):
