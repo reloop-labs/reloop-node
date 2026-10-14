@@ -320,6 +320,72 @@ if (threadError) throw threadError;
 
 More examples: [reloop.sh/docs](https://reloop.sh/docs)
 
+## Automations
+
+An automation runs a series of steps (send an email, wait, branch on a condition) for a contact when your app tracks a custom event.
+
+### Events
+
+Track an event to start every active automation it triggers. `email` creates the contact if it doesn't exist yet.
+
+```typescript
+const { event, eventError } = await reloop.events.track({
+  event: "user.signed_up",
+  email: "john.doe@example.com",
+  properties: { plan: "pro" },
+});
+if (eventError) throw eventError;
+console.log(`Started ${event.enrollments} automations`);
+```
+
+| Method | Purpose |
+|--------|---------|
+| `track(params)` | Track an event for a contact and start matching automations |
+| `create(params)` | Define an event and its properties |
+| `list(params?)` | List events |
+| `get(idOrKey)` | Get an event by id or key |
+| `update(id, params)` | Rename, or replace its properties |
+| `delete(id)` | Delete an event |
+
+Event keys always start with `trigger.`; you can leave the prefix off (`user.signed_up` and `trigger.user.signed_up` are the same event).
+
+### Automations
+
+```typescript
+const { automation, automationError } = await reloop.automations.create({
+  name: "Welcome",
+  status: "active",
+  steps: [
+    { key: "start", type: "trigger", config: { eventName: "user.signed_up" } },
+    { key: "is_pro", type: "condition", config: { type: "rule", field: "trigger.plan", operator: "eq", value: "pro" } },
+    { key: "welcome_pro", type: "send_email", config: { template: { id: "tmpl_pro" } } },
+    { key: "wait", type: "delay", config: { amount: 1, unit: "days" } },
+    { key: "welcome_free", type: "send_email", config: { template: { id: "tmpl_free" } } },
+  ],
+  connections: [
+    { from: "start", to: "is_pro" },
+    { from: "is_pro", to: "welcome_pro", type: "condition_met" },
+    { from: "is_pro", to: "wait", type: "condition_not_met" },
+    { from: "wait", to: "welcome_free" },
+  ],
+});
+if (automationError) throw automationError;
+```
+
+| Method | Purpose |
+|--------|---------|
+| `create(params)` | Create an automation from steps and connections |
+| `list(params?)` | List automations |
+| `get(id)` | Get one automation |
+| `update(id, params)` | Rename, or replace steps and connections together |
+| `activate(id)` / `pause(id)` | Start or stop it |
+| `enroll(id, params)` | Start it for one contact without an event |
+| `delete(id)` | Delete an automation |
+| `enrollments.list(id, params?)` | Contacts that went through it; filter by `status` |
+| `enrollments.get(id, enrollmentId)` | One enrollment with each step's result |
+
+When creating or updating fails, `automationError.body.why` lists every problem with the steps at once.
+
 ## License
 
 Licensed under the [Apache License 2.0](./LICENSE) with additional use restrictions from Reloop Labs (same as the [Reloop project](https://github.com/reloop-labs/reloop/blob/main/LICENSE)).
