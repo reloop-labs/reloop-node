@@ -12,6 +12,8 @@ import type {
 	AutomationResult,
 	EnrollmentResult,
 } from "@/services/automation/result";
+import { startAutomation } from "@/services/automation/start/start";
+import { TriggerService } from "@/services/automation/trigger/trigger";
 import type {
 	Automation,
 	CreateAutomationParams,
@@ -19,15 +21,28 @@ import type {
 	EnrollContactParams,
 	EnrollContactResponse,
 	ListAutomationsParams,
+	StartAutomationParams,
+	StartAutomationResponse,
 	UpdateAutomationParams,
 } from "@/services/automation/types";
 import { updateAutomation } from "@/services/automation/update/update";
 
 export class AutomationService {
 	public readonly enrollments: EnrollmentService;
+	public readonly triggers: TriggerService;
 
 	constructor(private readonly client: ReloopClient) {
 		this.enrollments = new EnrollmentService(client);
+		this.triggers = new TriggerService(client);
+	}
+
+	/**
+	 * Starts every active automation triggered by `event` for one contact.
+	 */
+	async start(
+		params: StartAutomationParams,
+	): Promise<AutomationResult<StartAutomationResponse>> {
+		return startAutomation(this.client, params);
 	}
 
 	/** Creates an automation from steps and the connections between them. */
@@ -57,7 +72,7 @@ export class AutomationService {
 		return deleteAutomation(this.client, id);
 	}
 
-	/** Publishes the current steps and starts running it for new events. */
+	/** Publishes the current steps and starts running it for new `start` calls. */
 	async activate(id: string): Promise<AutomationResult<Automation>> {
 		return activateAutomation(this.client, id);
 	}
@@ -67,7 +82,7 @@ export class AutomationService {
 		return pauseAutomation(this.client, id);
 	}
 
-	/** Starts an active automation for one contact without an event. */
+	/** Starts this one active automation for a contact, without a trigger. */
 	async enroll(
 		id: string,
 		params: EnrollContactParams,

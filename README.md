@@ -322,32 +322,41 @@ More examples: [reloop.sh/docs](https://reloop.sh/docs)
 
 ## Automations
 
-An automation runs a series of steps (send an email, wait, branch on a condition) for a contact when your app tracks a custom event.
+An automation runs a series of steps (send an email, wait, branch on a condition) for a contact when your app starts it.
 
-### Events
+### Start an automation
 
-Track an event to start every active automation it triggers. `email` creates the contact if it doesn't exist yet.
+Start every active automation listening for `event`. `email` creates the contact if it doesn't exist yet.
 
 ```typescript
-const { event, eventError } = await reloop.events.track({
+const { automation, automationError } = await reloop.automations.start({
   event: "user.signed_up",
   email: "john.doe@example.com",
   properties: { plan: "pro" },
 });
-if (eventError) throw eventError;
-console.log(`Started ${event.enrollments} automations`);
+if (automationError) throw automationError;
+console.log(`Started ${automation.enrollments} automations`);
+```
+
+### Triggers
+
+A trigger is the event `start` sends, plus the properties it carries. Manage them with `reloop.automations.triggers`:
+
+```typescript
+const { trigger, triggerError } = await reloop.automations.triggers.update(id, {
+  description: "Sent right after sign-up",
+});
 ```
 
 | Method | Purpose |
 |--------|---------|
-| `track(params)` | Track an event for a contact and start matching automations |
-| `create(params)` | Define an event and its properties |
-| `list(params?)` | List events |
-| `get(idOrKey)` | Get an event by id or key |
+| `create(params)` | Define a trigger and its properties |
+| `list(params?)` | List triggers |
+| `get(idOrKey)` | Get a trigger by id or key |
 | `update(id, params)` | Rename, or replace its properties |
-| `delete(id)` | Delete an event |
+| `delete(id)` | Delete a trigger |
 
-Event keys always start with `trigger.`; you can leave the prefix off (`user.signed_up` and `trigger.user.signed_up` are the same event).
+Trigger keys always start with `trigger.`; you can leave the prefix off (`user.signed_up` and `trigger.user.signed_up` are the same trigger).
 
 ### Automations
 
@@ -374,15 +383,17 @@ if (automationError) throw automationError;
 
 | Method | Purpose |
 |--------|---------|
+| `start(params)` | Start every active automation for `event` |
 | `create(params)` | Create an automation from steps and connections |
 | `list(params?)` | List automations |
 | `get(id)` | Get one automation |
 | `update(id, params)` | Rename, or replace steps and connections together |
 | `activate(id)` / `pause(id)` | Start or stop it |
-| `enroll(id, params)` | Start it for one contact without an event |
+| `enroll(id, params)` | Start this one automation for a contact, without a trigger |
 | `delete(id)` | Delete an automation |
 | `enrollments.list(id, params?)` | Contacts that went through it; filter by `status` |
 | `enrollments.get(id, enrollmentId)` | One enrollment with each step's result |
+| `triggers.*` | See [Triggers](#triggers) |
 
 When creating or updating fails, `automationError.body.why` lists every problem with the steps at once.
 

@@ -1,9 +1,8 @@
-import { ReloopValidationError } from "@/services/event/errors";
-import type { EventPropertyParams } from "@/services/event/types";
+import { ReloopValidationError } from "@/services/automation/errors";
+import type { TriggerPropertyParams } from "@/services/automation/trigger/types";
 
 export {
 	optionalDescription,
-	requireContactTarget,
 	requireLimit,
 	requirePage,
 	requireParamsObject,
@@ -12,26 +11,26 @@ export {
 const PROPERTY_NAME = /^[a-zA-Z][a-zA-Z0-9_]*$/;
 const PROPERTY_TYPES = new Set(["string", "number", "boolean"]);
 
-export function requireEventRef(value: unknown, field = "id"): string {
+export function requireTriggerRef(value: unknown, field = "id"): string {
 	if (typeof value !== "string" || value.trim().length === 0) {
 		throw new ReloopValidationError(
-			`Event ${field} is required and must be a non-empty string.`,
+			`Trigger ${field} is required and must be a non-empty string.`,
 			field,
 		);
 	}
 	return value.trim();
 }
 
-export function requireEventName(value: unknown, field = "name"): string {
+export function requireTriggerName(value: unknown, field = "name"): string {
 	if (typeof value !== "string" || value.trim().length === 0) {
 		throw new ReloopValidationError(
-			`Event ${field} is required and must be a non-empty string.`,
+			`Trigger ${field} is required and must be a non-empty string.`,
 			field,
 		);
 	}
 	if (value.trim().length > 255) {
 		throw new ReloopValidationError(
-			`Event ${field} must be at most 255 characters.`,
+			`Trigger ${field} must be at most 255 characters.`,
 			field,
 		);
 	}
@@ -41,7 +40,7 @@ export function requireEventName(value: unknown, field = "name"): string {
 export function requireProperties(
 	value: unknown,
 	field = "properties",
-): EventPropertyParams[] {
+): TriggerPropertyParams[] {
 	if (!Array.isArray(value) || value.length > 50) {
 		throw new ReloopValidationError(
 			`${field} must be an array of at most 50 properties.`,
@@ -70,5 +69,5 @@ export function requireProperties(
 			);
 		}
 	});
-	return value as EventPropertyParams[];
+	return value as TriggerPropertyParams[];
 }

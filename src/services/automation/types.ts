@@ -227,3 +227,31 @@ export interface EnrollmentDetail {
 	enrollment: Enrollment;
 	steps: StepRun[];
 }
+
+/**
+ * Pass `contactId`, or `email` to find the contact (it is created if it does
+ * not exist yet; `firstName` / `lastName` are used only then).
+ */
+export interface StartAutomationParams {
+	/** The trigger's key, e.g. `user.signed_up` (same as `trigger.user.signed_up`). */
+	event: string;
+	contactId?: string;
+	email?: string;
+	firstName?: string;
+	lastName?: string;
+	/** Conditions read them as `trigger.<name>`. */
+	properties?: Record<string, unknown>;
+}
+
+export interface StartAutomationResponse {
+	success: boolean;
+	eventId: string;
+	eventKey: string;
+	contactId: string;
+	/** `true` when `email` did not match a contact and one was created. */
+	contactCreated: boolean;
+	/** How many active automations this started. */
+	enrollments: number;
+	/** The properties after defaults were applied. */
+	properties: Record<string, unknown>;
+}

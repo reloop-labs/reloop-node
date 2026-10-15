@@ -179,7 +179,7 @@ function optionalString(value: unknown, field: string, max = 255): string | unde
 	return value;
 }
 
-/** `contactId` or `email` (with optional names). Shared by enroll and events.track. */
+/** `contactId` or `email` (with optional names). Shared by enroll and start. */
 export function requireContactTarget(input: Record<string, unknown>): {
 	contactId?: string;
 	email?: string;

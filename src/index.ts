@@ -4,7 +4,6 @@ import { ApiKeyService } from "@/services/api-key/api-key";
 import { AutomationService } from "@/services/automation/automation";
 import { ContactsService } from "@/services/contacts/contacts";
 import { DomainService } from "@/services/domain/domain";
-import { EventService } from "@/services/event/event";
 import { InboxService } from "@/services/inbox/inbox";
 import { MailService } from "@/services/mail/mail";
 import { WebhookService } from "@/services/webhook/webhook";
@@ -13,7 +12,6 @@ export class Reloop {
 	public apiKey: ApiKeyService;
 	public automations: AutomationService;
 	public contacts: ContactsService;
-	public events: EventService;
 	public domain: DomainService;
 	public webhook: WebhookService;
 	public mail: MailService;
@@ -25,7 +23,6 @@ export class Reloop {
 		this.apiKey = new ApiKeyService(this.client);
 		this.automations = new AutomationService(this.client);
 		this.contacts = new ContactsService(this.client);
-		this.events = new EventService(this.client);
 		this.domain = new DomainService(this.client);
 		this.webhook = new WebhookService(this.client);
 		this.mail = new MailService(this.client);
@@ -196,6 +193,9 @@ export type {
 	EnrollmentListResult,
 	EnrollmentResult,
 } from "@/services/automation/result";
-export * from "@/services/event/event";
-export * from "@/services/event/types";
-export type { EventListResult, EventResult } from "@/services/event/result";
+export * from "@/services/automation/trigger/trigger";
+export * from "@/services/automation/trigger/types";
+export type {
+	TriggerListResult,
+	TriggerResult,
+} from "@/services/automation/trigger/result";

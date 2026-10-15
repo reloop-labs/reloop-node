@@ -16,11 +16,11 @@ afterEach(() => {
 	mock.restore();
 });
 
-const EVENT_ID = "evt_123";
+const TRIGGER_ID = "evt_123";
 
-function eventFixture(overrides: Record<string, unknown> = {}) {
+function triggerFixture(overrides: Record<string, unknown> = {}) {
 	return {
-		id: EVENT_ID,
+		id: TRIGGER_ID,
 		organizationId: "org_1",
 		name: "User signed up",
 		key: "trigger.user.signed_up",
@@ -32,11 +32,11 @@ function eventFixture(overrides: Record<string, unknown> = {}) {
 	};
 }
 
-test("track: POST /api/workflow/v1/events/track", async () => {
+test("start: POST /api/workflow/v1/events/track", async () => {
 	const fetchMock = mockFetch(
 		jsonResponse({
 			success: true,
-			eventId: EVENT_ID,
+			eventId: TRIGGER_ID,
 			eventKey: "trigger.user.signed_up",
 			contactId: "con_1",
 			contactCreated: false,
@@ -44,13 +44,13 @@ test("track: POST /api/workflow/v1/events/track", async () => {
 			properties: { plan: "pro" },
 		}),
 	);
-	const { event, eventError } = await createClient().events.track({
+	const { automation, automationError } = await createClient().automations.start({
 		event: "user.signed_up",
 		email: "john.doe@example.com",
 		properties: { plan: "pro" },
 	});
-	assert.equal(eventError, null);
-	assert.equal(event?.enrollments, 2);
+	assert.equal(automationError, null);
+	assert.equal(automation?.enrollments, 2);
 	const call = getCall(fetchMock);
 	assert.equal(call.url, "https://reloop.sh/api/workflow/v1/events/track");
 	assert.equal(call.method, "POST");
@@ -62,47 +62,47 @@ test("track: POST /api/workflow/v1/events/track", async () => {
 	});
 });
 
-test("track: returns eventError from the API", async () => {
+test("start: returns automationError from the API", async () => {
 	mockFetch(errorJsonResponse({ message: 'Missing required property "plan".' }, 400));
-	const { event, eventError } = await createClient().events.track({
+	const { automation, automationError } = await createClient().automations.start({
 		event: "user.signed_up",
 		contactId: "con_1",
 	});
-	assert.equal(event, null);
-	assert.equal(eventError?.status, 400);
+	assert.equal(automation, null);
+	assert.equal(automationError?.status, 400);
 });
 
-test("track: needs an event and a contact before any request", async () => {
+test("start: needs an event and a contact before any request", async () => {
 	const fetchMock = mockFetch(new Response("{}"));
-	const events = createClient().events;
+	const automations = createClient().automations;
 	await assert.rejects(
-		() => events.track({ event: "", email: "a@b.co" }),
+		() => automations.start({ event: "", email: "a@b.co" }),
 		ReloopValidationError,
 	);
-	await assert.rejects(() => events.track({ event: "x" }), ReloopValidationError);
+	await assert.rejects(() => automations.start({ event: "x" }), ReloopValidationError);
 	await assert.rejects(
-		() => events.track({ event: "x", contactId: "con_1", properties: [] as never }),
+		() => automations.start({ event: "x", contactId: "con_1", properties: [] as never }),
 		ReloopValidationError,
 	);
 	assertNoFetch(fetchMock);
 });
 
 test("create: with properties", async () => {
-	const fetchMock = mockFetch(jsonResponse(eventFixture(), 201));
+	const fetchMock = mockFetch(jsonResponse(triggerFixture(), 201));
 	const params = {
 		name: "User signed up",
 		key: "user.signed_up",
 		properties: [{ name: "plan", propertyType: "string" as const, required: true }],
 	};
-	const { event } = await createClient().events.create(params);
-	assert.equal(event?.key, "trigger.user.signed_up");
+	const { trigger } = await createClient().automations.triggers.create(params);
+	assert.equal(trigger?.key, "trigger.user.signed_up");
 	const call = getCall(fetchMock);
 	assert.equal(call.url, "https://reloop.sh/api/workflow/v1/events");
 	assert.deepEqual(parseBody(call.body), params);
 
 	await assert.rejects(
 		() =>
-			createClient().events.create({
+			createClient().automations.triggers.create({
 				name: "x",
 				properties: [{ name: "1bad" }],
 			}),
@@ -112,33 +112,33 @@ test("create: with properties", async () => {
 
 test("list / get / update / delete", async () => {
 	const listMock = mockFetch(
-		jsonResponse({ events: [eventFixture()], total: 1, page: 1, limit: 50 }),
+		jsonResponse({ events: [triggerFixture()], total: 1, page: 1, limit: 50 }),
 	);
-	const { events } = await createClient().events.list({ page: 1 });
-	assert.equal(events?.total, 1);
+	const { triggers } = await createClient().automations.triggers.list({ page: 1 });
+	assert.equal(triggers?.total, 1);
 	assert.equal(getCall(listMock).url, "https://reloop.sh/api/workflow/v1/events?page=1");
 
 	mock.restore();
-	const getMock = mockFetch(jsonResponse(eventFixture()));
-	await createClient().events.get("user.signed_up");
+	const getMock = mockFetch(jsonResponse(triggerFixture()));
+	await createClient().automations.triggers.get("user.signed_up");
 	assert.equal(
 		getCall(getMock).url,
 		"https://reloop.sh/api/workflow/v1/events/user.signed_up",
 	);
 
 	mock.restore();
-	const updateMock = mockFetch(jsonResponse(eventFixture({ description: "New" })));
-	await createClient().events.update(EVENT_ID, { description: "New" });
+	const updateMock = mockFetch(jsonResponse(triggerFixture({ description: "New" })));
+	await createClient().automations.triggers.update(TRIGGER_ID, { description: "New" });
 	assert.equal(getCall(updateMock).method, "PATCH");
 	assert.deepEqual(parseBody(getCall(updateMock).body), { description: "New" });
 	await assert.rejects(
-		() => createClient().events.update(EVENT_ID, {}),
+		() => createClient().automations.triggers.update(TRIGGER_ID, {}),
 		ReloopValidationError,
 	);
 
 	mock.restore();
-	const deleteMock = mockFetch(jsonResponse({ success: true, id: EVENT_ID }));
-	const { event } = await createClient().events.delete(EVENT_ID);
-	assert.deepEqual(event, { success: true, id: EVENT_ID });
+	const deleteMock = mockFetch(jsonResponse({ success: true, id: TRIGGER_ID }));
+	const { trigger } = await createClient().automations.triggers.delete(TRIGGER_ID);
+	assert.deepEqual(trigger, { success: true, id: TRIGGER_ID });
 	assert.equal(getCall(deleteMock).method, "DELETE");
 });
