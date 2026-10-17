@@ -8,6 +8,9 @@ import {
 } from "@/core/result";
 
 const DEFAULT_BASE_URL = "https://reloop.sh";
+// Keep in sync with package.json "version".
+const SDK_VERSION = "2.3.0";
+const DEFAULT_USER_AGENT = `reloop-node/${SDK_VERSION}`;
 
 export class ReloopClient {
 
@@ -33,6 +36,11 @@ export class ReloopClient {
 		const headers = new Headers(options.headers);
 		headers.set("x-api-key", this.#apiKey);
 		headers.set("Content-Type", "application/json");
+		// The API rejects requests without a User-Agent, and runtimes like
+		// Cloudflare Workers don't add one to fetch() by default.
+		if (!headers.get("User-Agent")?.trim()) {
+			headers.set("User-Agent", DEFAULT_USER_AGENT);
+		}
 
 		try {
 			const response = await fetch(url, {

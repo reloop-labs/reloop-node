@@ -148,3 +148,28 @@ test("ReloopClient is not constructable from the public package surface", async 
 	const mod = await import("../dist/index.js");
 	assert.equal(mod.ReloopClient, undefined);
 });
+
+test("sends a default User-Agent matching the package version", async () => {
+	const fetchMock = mockFetch(
+		Response.json({
+			success: true,
+			messageId: "msg_1",
+			status: "sent",
+			timestamp: "2026-01-01T00:00:00.000Z",
+			id: "log_1",
+		}),
+	);
+
+	const reloop = new Reloop({ apiKey: "rl_test" });
+	await reloop.mail.send({
+		from: "a@b.com",
+		to: "c@d.com",
+		subject: "Hi",
+	});
+
+	const { version } = await import("../package.json");
+	assert.equal(
+		new Headers(fetchMock.mock.calls[0]?.[1]?.headers).get("user-agent"),
+		`reloop-node/${version}`,
+	);
+});
