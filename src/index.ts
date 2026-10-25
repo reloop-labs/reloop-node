@@ -138,6 +138,7 @@ export type {
 } from "@/services/webhook/result";
 export {
 	verifyWebhook,
+	WEBHOOK_ID_HEADER,
 	WEBHOOK_SIGNATURE_HEADER,
 	WEBHOOK_TIMESTAMP_HEADER,
 } from "@/services/webhook/verify/verify";

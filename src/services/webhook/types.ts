@@ -122,10 +122,21 @@ export interface RetryWebhookDeliveryResponse {
 	message: string;
 }
 
+/** A verified webhook delivery, as Reloop sends it. */
 export interface WebhookEvent {
+	/** Event id (`whev_…`), same as the `Reloop-Id` header. */
 	id: string;
+	/** Event type, e.g. `email.delivered` or `email.received`. */
+	type: string;
+	/** ISO 8601 time the event was created. */
+	created_at: string;
+	/** Event-specific fields. */
+	data: Record<string, unknown>;
+	/** @deprecated Use `type`. */
 	event: string;
+	/** @deprecated Use `data`. */
 	payload: Record<string, unknown>;
+	/** @deprecated Use `created_at`. Unix seconds. */
 	timestamp: number;
 }
 

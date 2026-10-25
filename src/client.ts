@@ -9,7 +9,7 @@ import {
 
 const DEFAULT_BASE_URL = "https://reloop.sh";
 // Keep in sync with package.json "version".
-const SDK_VERSION = "2.3.1";
+const SDK_VERSION = "2.3.2";
 const DEFAULT_USER_AGENT = `reloop-node/${SDK_VERSION}`;
 
 export class ReloopClient {

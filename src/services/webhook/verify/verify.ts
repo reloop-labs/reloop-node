@@ -2,8 +2,13 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import type { VerifyWebhookParams, WebhookEvent } from "@/services/webhook/types";
 import { WebhookSignatureVerificationError } from "@/services/webhook/types";
 
-export const WEBHOOK_SIGNATURE_HEADER = "x-webhook-signature";
-export const WEBHOOK_TIMESTAMP_HEADER = "x-webhook-timestamp";
+/** Header Reloop signs every webhook delivery with: `t=<unix>,v1=<hex>`. */
+export const WEBHOOK_SIGNATURE_HEADER = "Reloop-Signature";
+export const WEBHOOK_TIMESTAMP_HEADER = "Reloop-Timestamp";
+export const WEBHOOK_ID_HEADER = "Reloop-Id";
+
+/** Header names used before 2.3.2. Still accepted as a fallback. */
+const LEGACY_SIGNATURE_HEADER = "x-webhook-signature";
 
 const DEFAULT_TOLERANCE_SECONDS = 300;
 
@@ -44,7 +49,7 @@ function parseSignatureHeader(header: string): {
 
 	if (!timestamp || signatures.length === 0) {
 		throw new WebhookSignatureVerificationError(
-			"Invalid X-Webhook-Signature header: expected t= and v1= values",
+			`Invalid ${WEBHOOK_SIGNATURE_HEADER} header: expected t= and v1= values`,
 		);
 	}
 
@@ -83,7 +88,7 @@ function verifyTimestamp(timestamp: string, tolerance: number): void {
 	const ts = Number(timestamp);
 	if (!Number.isFinite(ts)) {
 		throw new WebhookSignatureVerificationError(
-			"Invalid timestamp in X-Webhook-Signature header",
+			`Invalid timestamp in ${WEBHOOK_SIGNATURE_HEADER} header`,
 		);
 	}
 
@@ -95,6 +100,10 @@ function verifyTimestamp(timestamp: string, tolerance: number): void {
 	}
 }
 
+function isObject(value: unknown): value is Record<string, unknown> {
+	return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
 function parseWebhookEvent(raw: string): WebhookEvent {
 	let parsed: unknown;
 	try {
@@ -103,45 +112,54 @@ function parseWebhookEvent(raw: string): WebhookEvent {
 		throw new WebhookSignatureVerificationError("Webhook payload is not valid JSON");
 	}
 
-	if (!parsed || typeof parsed !== "object") {
+	if (!isObject(parsed)) {
 		throw new WebhookSignatureVerificationError(
 			"Webhook payload must be a JSON object",
 		);
 	}
 
-	const record = parsed as Record<string, unknown>;
-	const { id, event, payload, timestamp } = record;
-
+	const { id } = parsed;
 	if (typeof id !== "string" || !id) {
 		throw new WebhookSignatureVerificationError(
 			"Webhook payload missing required field: id",
 		);
 	}
-	if (typeof event !== "string" || !event) {
+
+	// Production envelope: { id, type, created_at, data }.
+	// Legacy envelope (pre-2.3.2 fixtures): { id, event, payload, timestamp }.
+	const type = parsed.type ?? parsed.event;
+	const data = parsed.data ?? parsed.payload;
+	const createdAt =
+		typeof parsed.created_at === "string"
+			? parsed.created_at
+			: typeof parsed.timestamp === "number" && Number.isFinite(parsed.timestamp)
+				? new Date(parsed.timestamp * 1000).toISOString()
+				: undefined;
+
+	if (typeof type !== "string" || !type) {
 		throw new WebhookSignatureVerificationError(
-			"Webhook payload missing required field: event",
+			"Webhook payload missing required field: type",
 		);
 	}
-	if (
-		!payload ||
-		typeof payload !== "object" ||
-		Array.isArray(payload)
-	) {
+	if (!isObject(data)) {
 		throw new WebhookSignatureVerificationError(
-			"Webhook payload missing required field: payload",
+			"Webhook payload missing required field: data",
 		);
 	}
-	if (typeof timestamp !== "number" || !Number.isFinite(timestamp)) {
+	if (!createdAt) {
 		throw new WebhookSignatureVerificationError(
-			"Webhook payload missing required field: timestamp",
+			"Webhook payload missing required field: created_at",
 		);
 	}
 
 	return {
 		id,
-		event,
-		payload: payload as Record<string, unknown>,
-		timestamp,
+		type,
+		created_at: createdAt,
+		data,
+		event: type,
+		payload: data,
+		timestamp: Math.floor(Date.parse(createdAt) / 1000),
 	};
 }
 
@@ -153,7 +171,9 @@ export function verifyWebhook(params: VerifyWebhookParams): WebhookEvent {
 		throw new WebhookSignatureVerificationError("Webhook secret is required");
 	}
 
-	const signatureHeader = getHeader(headers, WEBHOOK_SIGNATURE_HEADER);
+	const signatureHeader =
+		getHeader(headers, WEBHOOK_SIGNATURE_HEADER) ??
+		getHeader(headers, LEGACY_SIGNATURE_HEADER);
 	if (!signatureHeader) {
 		throw new WebhookSignatureVerificationError(
 			`Missing ${WEBHOOK_SIGNATURE_HEADER} header`,

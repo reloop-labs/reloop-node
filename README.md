@@ -258,12 +258,17 @@ const { webhook, webhookError } = await reloop.webhook.create({
 });
 if (webhookError) throw webhookError;
 
-// In your HTTP handler (Express, etc.):
+// In your HTTP handler (Express, etc.). Pass the raw request body, not parsed JSON.
 const event = WebhookService.constructEvent(
   rawBody,
-  req.headers["x-webhook-signature"],
+  req.headers["reloop-signature"],
   webhookSecret,
 );
+
+// event: { id, type, created_at, data }
+if (event.type === "email.received") {
+  console.log(event.data.subject);
+}
 ```
 
 ## Inbox
